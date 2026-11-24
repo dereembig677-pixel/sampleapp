@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- ✏️ EDIT: the title shown in the browser tab and on Google -->
+  <title>Alex Morgan — Designer & Developer</title>
+  <!-- ✏️ EDIT: one-sentence description shown on Google and when the link is shared -->
+  <meta name="description" content="Portfolio of Alex Morgan, an independent designer and developer crafting thoughtful digital products.">
+
+  <meta property="og:title" content="Alex Morgan — Designer & Developer">
+  <meta property="og:description" content="Independent designer and developer crafting thoughtful digital products.">
+  <meta property="og:type" content="website">
+  <meta name="theme-color" content="#f6f3ee">
+
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- Applies your saved light/dark choice before the page draws, so it doesn't flash -->
+  <script>
+    try { var t = localStorage.getItem('theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- ================= TOP MENU ================= -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <!-- ✏️ EDIT: your name or initials -->
+      <a class="logo" href="#top" aria-label="Back to top">Alex Morgan<span class="logo-dot">.</span></a>
+
+      <nav class="nav" id="nav" aria-label="Main">
+        <a href="#work">Work</a>
+        <a href="#about">About</a>
+        <a href="#services">Services</a>
+        <a href="#contact">Contact</a>
+      </nav>
+
+      <div class="header-actions">
+        <button class="icon-btn" id="theme-toggle" type="button" aria-label="Switch light or dark mode">
+          <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        </button>
+        <button class="icon-btn menu-btn" id="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav">
+          <span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <!-- ================= INTRO (first thing people see) ================= -->
+    <section class="hero" id="top">
+      <div class="container">
+        <!-- ✏️ EDIT: small line above your headline -->
+        <p class="eyebrow reveal"><span class="status-dot"></span> Available for new projects</p>
+        <!-- ✏️ EDIT: your main headline. The words inside <em> appear in the accent style. -->
+        <h1 class="hero-title reveal">I design and build <em>thoughtful</em> digital products.</h1>
+        <!-- ✏️ EDIT: one or two sentences about you -->
+        <p class="hero-lead reveal">I'm Alex, an independent designer and developer based in Dublin. I help small teams and founders turn ideas into clear, beautiful websites and apps.</p>
+        <div class="hero-cta reveal">
+          <a class="btn btn-primary" href="#work">See my work</a>
+          <a class="btn btn-ghost" href="#contact">Get in touch</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= PROJECTS ================= -->
+    <section class="section" id="work">
+      <div class="container">
+        <div class="section-head reveal">
+          <p class="section-label">Selected work</p>
+          <h2>Recent projects</h2>
+        </div>
+
+        <!--
+          ✏️ EDIT: each <article class="project"> … </article> block is ONE project.
+          Copy a whole block to add a project, delete a block to remove one.
+          To use a real picture: put it in the "images" folder, then replace the
+          <div class="project-art …"></div> line with:
+            <img class="project-img" src="images/your-picture.jpg" alt="Short description of the picture">
+        -->
+        <div class="projects">
+
+          <article class="project reveal">
+            <a class="project-link" href="#" aria-label="Lumen Finance case study">
+              <div class="project-media"><div class="project-art art-1"></div></div>
+              <div class="project-body">
+                <div class="project-meta"><span>Web app</span><span>2026</span></div>
+                <h3>Lumen Finance</h3>
+                <p>A calm, friendly budgeting app that helped 40,000 people understand where their money goes.</p>
+              </div>
+            </a>
+          </article>
+
+          <article class="project reveal">
+            <a class="project-link" href="#" aria-label="Harbour Coffee case study">
+              <div class="project-media"><div class="project-art art-2"></div></div>
+              <div class="project-body">
+                <div class="project-meta"><span>Branding · Website</span><span>2025</span></div>
+                <h3>Harbour Coffee</h3>
+                <p>New identity and online shop for a local roastery. Online orders grew 3× in six months.</p>
+              </div>
+            </a>
+          </article>
+
+          <article class="project reveal">
+            <a class="project-link" href="#" aria-label="Fieldnote case study">
+              <div class="project-media"><div class="project-art art-3"></div></div>
+              <div class="project-body">
+                <div class="project-meta"><span>Mobile app</span><span>2025</span></div>
+                <h3>Fieldnote</h3>
+                <p>A note-taking app for researchers working outdoors, designed to work even without internet.</p>
+              </div>
+            </a>
+          </article>
+
+          <article class="project reveal">
+            <a class="project-link" href="#" aria-label="Atlas Studio case study">
+              <div class="project-media"><div class="project-art art-4"></div></div>
+              <div class="project-body">
+                <div class="project-meta"><span>Website</span><span>2024</span></div>
+                <h3>Atlas Studio</h3>
+                <p>A portfolio site for an architecture studio, focused on large photography and fast loading.</p>
+              </div>
+            </a>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= ABOUT ME ================= -->
+    <section class="section section-alt" id="about">
+      <div class="container about">
+        <div class="about-photo reveal">
+          <!--
+            ✏️ EDIT: to show your photo, put it in the "images" folder (for example "me.jpg")
+            and replace the line below with:
+              <img src="images/me.jpg" alt="Portrait of Alex Morgan">
+          -->
+          <div class="photo-placeholder" aria-hidden="true">AM</div>
+        </div>
+        <div class="about-text">
+          <p class="section-label reveal">About</p>
+          <h2 class="reveal">A little about me</h2>
+          <!-- ✏️ EDIT: your story. Each <p> … </p> is one paragraph. -->
+          <p class="reveal">For the past eight years I've worked with startups, agencies and nonprofits, designing products people actually enjoy using. I care about clarity, good typography and the small details that make something feel finished.</p>
+          <p class="reveal">When I'm not at my desk you'll find me walking the coast, taking film photos, or trying (and failing) to bake the perfect loaf.</p>
+
+          <!-- ✏️ EDIT: three quick facts about you -->
+          <dl class="stats reveal">
+            <div><dt>8+</dt><dd>Years of experience</dd></div>
+            <div><dt>60+</dt><dd>Projects shipped</dd></div>
+            <div><dt>25</dt><dd>Happy clients</dd></div>
+          </dl>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= WHAT I DO ================= -->
+    <section class="section" id="services">
+      <div class="container">
+        <div class="section-head reveal">
+          <p class="section-label">Services</p>
+          <h2>How I can help</h2>
+        </div>
+        <!-- ✏️ EDIT: each <div class="service"> block is one thing you offer -->
+        <div class="services">
+          <div class="service reveal">
+            <span class="service-num">01</span>
+            <h3>Product design</h3>
+            <p>From rough idea to polished screens: research, wireframes, prototypes and final design.</p>
+          </div>
+          <div class="service reveal">
+            <span class="service-num">02</span>
+            <h3>Web development</h3>
+            <p>Fast, accessible websites that look great on every phone, tablet and computer.</p>
+          </div>
+          <div class="service reveal">
+            <span class="service-num">03</span>
+            <h3>Brand identity</h3>
+            <p>Logos, colours and type that give your business a clear, memorable personality.</p>
+          </div>
+        </div>
+
+        <!-- ✏️ EDIT: tools or skills you use -->
+        <ul class="skills reveal" aria-label="Tools and skills">
+          <li>Figma</li><li>HTML & CSS</li><li>JavaScript</li><li>React</li>
+          <li>Webflow</li><li>Illustrator</li><li>User research</li><li>Prototyping</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ================= TESTIMONIAL ================= -->
+    <section class="section section-alt">
+      <div class="container">
+        <!-- ✏️ EDIT: a nice quote from a client (or delete this whole section) -->
+        <figure class="quote reveal">
+          <blockquote>“Alex took our messy idea and turned it into something our customers love. Clear communication, on time, and a genuine pleasure to work with.”</blockquote>
+          <figcaption><strong>Sarah Chen</strong> · Founder, Harbour Coffee</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ================= CONTACT ================= -->
+    <section class="section contact" id="contact">
+      <div class="container">
+        <p class="section-label reveal">Contact</p>
+        <h2 class="contact-title reveal">Have a project in mind?<br><em>Let's talk.</em></h2>
+        <!-- ✏️ EDIT: put your real email address in BOTH places on the next line -->
+        <a class="contact-email reveal" href="mailto:hello@example.com">hello@example.com</a>
+        <!-- ✏️ EDIT: your social links. Replace each "#" with your profile address, or delete a line. -->
+        <ul class="socials reveal">
+          <li><a href="#" target="_blank" rel="noopener">LinkedIn</a></li>
+          <li><a href="#" target="_blank" rel="noopener">Instagram</a></li>
+          <li><a href="#" target="_blank" rel="noopener">GitHub</a></li>
+          <li><a href="#" target="_blank" rel="noopener">Dribbble</a></li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <!-- ✏️ EDIT: your name -->
+      <p>© <span id="year">2026</span> Alex Morgan</p>
+      <a href="#top">Back to top ↑</a>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
