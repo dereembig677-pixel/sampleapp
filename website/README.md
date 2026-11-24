@@ -10,6 +10,10 @@
 | `favicon.svg` | The little icon in the browser tab. |
 | `404.html` | The page people see if they type a wrong address. |
 | `images/` | Put your photos here. |
+| `fonts/` | The Persian font (Vazirmatn), stored inside the site so it loads even where Google is blocked. Don't touch. |
+| `vendor/three.min.js` | The free 3D engine (Three.js) that draws the moving 3D shape. Don't touch. |
+
+The whole site is in **Persian, right-to-left**. Persian text goes in exactly like any text: just type or paste it between the tags.
 
 ## How to change the text
 
@@ -29,6 +33,13 @@ Tip: shrink big photos first (https://squoosh.app is free) so the site stays fas
 ## How to change the colours
 
 Open `styles.css`. The first block, marked `✏️ COLOURS`, lists every colour. Change a code like `#c2502e` to any colour you like (pick one at https://htmlcolorcodes.com).
+
+## The 3D parts
+
+- **The 3D shape at the top** follows the mouse and gently floats. To change its colour, open `script.js`, find the block marked `✏️ 3D SETTINGS`, and change the codes after `0x` (for example `0xc2502e` → `0x2e6bc2` for blue).
+- **The cards tilt in 3D** when the mouse moves over them. This works automatically for any card you add, as long as it keeps `tilt` in its `class="..."`.
+- On phones the shape sits softly behind the text. For visitors whose device asks for "less motion", it stays still.
+- If a very old device can't show 3D, a simple coloured ball appears instead. Nothing breaks.
 
 ## Putting it online for free (Cloudflare Pages)
 
