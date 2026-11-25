@@ -153,7 +153,7 @@ def build(timeline, W, H):
         s = shots[i]
         return shot_frame(s, srcs[s["file"]], t - s["start"], W, H)
 
-    for n in range(nframes):
+    def frame_at(n):
         t = n / FPS
         # active shot: last one whose start <= t
         i = max(k for k, s in enumerate(shots) if s["start"] <= t + 1e-6) if t >= shots[0]["start"] else 0
@@ -217,10 +217,32 @@ def build(timeline, W, H):
             frame = frame * ease(t / fade_in)
         if t > total - fade_out:
             frame = frame * ease((total - t) / fade_out)
-        yield (frame * 255 + 0.5).astype(np.uint8)
+        return (frame * 255 + 0.5).astype(np.uint8)
+
+    return frame_at, nframes
+
+
+def encode(args):
+    tl_path, out, W, H, n0, n1, preview = args
+    tl = json.load(open(tl_path))
+    frame_at, _ = build(tl, W, H)
+    cmd = ["ffmpeg", "-hide_banner", "-loglevel", "error", "-y",
+           "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-r", str(FPS), "-i", "-"]
+    if preview:
+        cmd += ["-c:v", "libx264", "-preset", "veryfast", "-crf", "24"]
+    else:
+        cmd += ["-c:v", "libx264", "-preset", "slow", "-crf", "18", "-profile:v", "high"]
+    cmd += ["-pix_fmt", "yuv420p", "-threads", "1", out]
+    p = subprocess.Popen(cmd, stdin=subprocess.PIPE)
+    for k in range(n0, n1):
+        p.stdin.write(frame_at(k).tobytes())
+    p.stdin.close()
+    return p.wait()
 
 
 def main():
+    import os, tempfile
+    from multiprocessing import Pool
     ap = argparse.ArgumentParser()
     ap.add_argument("timeline")
     ap.add_argument("out")
@@ -228,36 +250,31 @@ def main():
     ap.add_argument("--audio")
     ap.add_argument("--start", type=float, default=0)
     ap.add_argument("--dur", type=float)
+    ap.add_argument("--jobs", type=int, default=os.cpu_count())
     a = ap.parse_args()
     tl = json.load(open(a.timeline))
     W, H = tl.get("size", [1080, 1920])
     if a.preview:
-        W, H = W * 2 // 3 // 2 * 2, H * 2 // 3 // 2 * 2  # 720x1280
-    cmd = ["ffmpeg", "-hide_banner", "-loglevel", "error", "-y",
-           "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-r", str(FPS), "-i", "-"]
-    if a.audio:
-        cmd += ["-i", a.audio]
-    if a.preview:
-        cmd += ["-c:v", "libx264", "-preset", "veryfast", "-crf", "24", "-pix_fmt", "yuv420p"]
-    else:
-        cmd += ["-c:v", "libx264", "-preset", "slow", "-crf", "18", "-pix_fmt", "yuv420p",
-                "-profile:v", "high", "-movflags", "+faststart"]
-    if a.audio:
-        cmd += ["-c:a", "aac", "-b:a", "320k" if not a.preview else "160k", "-ar", "48000", "-shortest"]
-    cmd += [a.out]
-    p = subprocess.Popen(cmd, stdin=subprocess.PIPE)
+        W, H = 720, 1280
+    total = int(round(tl.get("duration", tl["shots"][-1]["end"]) * FPS))
     n0 = int(a.start * FPS)
-    n1 = n0 + int(a.dur * FPS) if a.dur else None
-    for k, fr in enumerate(build(tl, W, H)):
-        if k < n0:
-            continue
-        if n1 is not None and k >= n1:
-            break
-        p.stdin.write(fr.tobytes())
-        if k % 150 == 0:
-            print(f"frame {k}", file=sys.stderr, flush=True)
-    p.stdin.close()
-    sys.exit(p.wait())
+    n1 = min(total, n0 + int(a.dur * FPS)) if a.dur else total
+    tmp = tempfile.mkdtemp(prefix="render_")
+    step = -(-(n1 - n0) // a.jobs)
+    jobs = [(a.timeline, f"{tmp}/part{j:03d}.mp4", W, H, n0 + j * step, min(n1, n0 + (j + 1) * step), a.preview)
+            for j in range(a.jobs) if n0 + j * step < n1]
+    with Pool(len(jobs)) as pool:
+        rc = pool.map(encode, jobs)
+    if any(rc):
+        sys.exit("encode failed")
+    lst = f"{tmp}/list.txt"
+    open(lst, "w").write("".join(f"file '{j[1]}'\n" for j in jobs))
+    cmd = ["ffmpeg", "-hide_banner", "-loglevel", "error", "-y", "-f", "concat", "-safe", "0", "-i", lst]
+    if a.audio:
+        cmd += ["-ss", str(a.start), "-i", a.audio, "-map", "0:v", "-map", "1:a",
+                "-c:a", "aac", "-b:a", "320k" if not a.preview else "160k", "-ar", "48000", "-shortest"]
+    cmd += ["-c:v", "copy", "-movflags", "+faststart", "-r", str(FPS), a.out]
+    sys.exit(subprocess.call(cmd))
 
 
 if __name__ == "__main__":

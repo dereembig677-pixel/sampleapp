@@ -1,0 +1,17 @@
+{
+ "cuts": [
+  {
+   "raw_time": 24.585,
+   "removed": 0.11
+  },
+  {
+   "raw_time": 27.495,
+   "removed": 0.12
+  },
+  {
+   "raw_time": 32.495,
+   "removed": 0.14
+  }
+ ],
+ "note": "time map: clean_t = raw_t - sum(removed for cuts with raw_time < raw_t)"
+}
