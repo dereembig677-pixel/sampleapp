@@ -6,3 +6,5 @@ sfx/
 music/
 output/*.mp4
 output/*.wav
+source/
+__pycache__/
