@@ -1,0 +1,882 @@
+{
+ "size": [
+  1080,
+  1920
+ ],
+ "fps": 30,
+ "duration": 112.43,
+ "vignette": 0.35,
+ "glow": 0.22,
+ "fade_in": 0.6,
+ "fade_out": 1.2,
+ "audio": {
+  "narration": "output/narration_clean.wav",
+  "music": null,
+  "sfx": "missing - see output/sfx_needed.md"
+ },
+ "shots": [
+  {
+   "n": 1,
+   "file": "footage/f26.png",
+   "start": 0.0,
+   "end": 6.69,
+   "content": "driver calm at night",
+   "narration_phrases": [
+    0
+   ],
+   "narration_text": null,
+   "motion": {
+    "zoom": [
+     1.0,
+     1.12
+    ],
+    "from": [
+     0.5,
+     0.5
+    ],
+    "to": [
+     0.5,
+     0.42
+    ]
+   },
+   "transition_in": {
+    "type": "fade_in",
+    "dur": 0.6
+   },
+   "sfx": "amb: night city traffic, car interior hum"
+  },
+  {
+   "n": 2,
+   "file": "footage/f18.png",
+   "start": 6.69,
+   "end": 10.26,
+   "content": "man in black drops package in car",
+   "narration_phrases": [
+    1
+   ],
+   "narration_text": null,
+   "motion": {
+    "zoom": [
+     1.12,
+     1.0
+    ],
+    "from": [
+     0.62,
+     0.5
+    ],
+    "to": [
+     0.5,
+     0.5
+    ]
+   },
+   "transition_in": {
+    "type": "dip",
+    "dur": 0.4
+   },
+   "sfx": "car door creak + soft thud of package",
+   "rise_from_dark": 0.8
+  },
+  {
+   "n": 3,
+   "file": "footage/f17.png",
+   "start": 10.26,
+   "end": 12.92,
+   "content": "package belted on back seat",
+   "narration_phrases": [
+    2
+   ],
+   "narration_text": null,
+   "motion": {
+    "zoom": [
+     1.0,
+     1.12
+    ],
+    "from": [
+     0.5,
+     0.5
+    ],
+    "to": [
+     0.42,
+     0.45
+    ]
+   },
+   "transition_in": {
+    "type": "dissolve",
+    "dur": 0.33
+   },
+   "sfx": "seatbelt click, interior hum"
+  },
+  {
+   "n": 4,
+   "file": "footage/f19.png",
+   "start": 12.92,
+   "end": 16.85,
+   "content": "counting the money",
+   "narration_phrases": [
+    3,
+    4
+   ],
+   "narration_text": null,
+   "motion": {
+    "zoom": [
+     1.12,
+     1.0
+    ],
+    "from": [
+     0.55,
+     0.6
+    ],
+    "to": [
+     0.5,
+     0.5
+    ]
+   },
+   "transition_in": {
+    "type": "dissolve",
+    "dur": 0.33
+   },
+   "sfx": "banknote riffle"
+  },
+  {
+   "n": 5,
+   "file": "footage/f20.png",
+   "start": 16.85,
+   "end": 21.59,
+   "content": "note with instructions",
+   "narration_phrases": [
+    5
+   ],
+   "narration_text": null,
+   "motion": {
+    "zoom": [
+     1.0,
+     1.12
+    ],
+    "from": [
+     0.5,
+     0.5
+    ],
+    "to": [
+     0.38,
+     0.45
+    ]
+   },
+   "transition_in": {
+    "type": "cut",
+    "dur": 0
+   },
+   "sfx": "paper rustle"
+  },
+  {
+   "n": 6,
+   "file": "footage/f02.png",
+   "start": 21.59,
+   "end": 24.595,
+   "content": "thinking in the dark car",
+   "narration_phrases": [
+    6
+   ],
+   "narration_text": null,
+   "motion": {
+    "zoom": [
+     1.12,
+     1.0
+    ],
+    "from": [
+     0.62,
+     0.62
+    ],
+    "to": [
+     0.5,
+     0.5
+    ]
+   },
+   "transition_in": {
+    "type": "dissolve",
+    "dur": 0.33
+   },
+   "sfx": "interior hum, low heartbeat"
+  },
+  {
+   "n": 7,
+   "file": "footage/f21.png",
+   "start": 24.595,
+   "end": 27.38,
+   "content": "side mirror, red light",
+   "narration_phrases": [
+    7
+   ],
+   "narration_text": null,
+   "motion": {
+    "zoom": [
+     1.0,
+     1.12
+    ],
+    "from": [
+     0.5,
+     0.5
+    ],
+    "to": [
+     0.55,
+     0.58
+    ]
+   },
+   "transition_in": {
+    "type": "dip",
+    "dur": 0.4
+   },
+   "sfx": "faint distant siren",
+   "rise_from_dark": 0.8
+  },
+  {
+   "n": 8,
+   "file": "footage/f25.png",
+   "start": 27.38,
+   "end": 32.245,
+   "content": "rear-view mirror, police lights",
+   "narration_phrases": [
+    8,
+    9
+   ],
+   "narration_text": null,
+   "motion": {
+    "zoom": [
+     1.12,
+     1.0
+    ],
+    "from": [
+     0.5,
+     0.4
+    ],
+    "to": [
+     0.5,
+     0.5
+    ]
+   },
+   "transition_in": {
+    "type": "dissolve",
+    "dur": 0.33
+   },
+   "sfx": "siren closer"
+  },
+  {
+   "n": 9,
+   "file": "footage/f22.png",
+   "start": 32.245,
+   "end": 36.775,
+   "content": "radio crackles, blue/red lights",
+   "narration_phrases": [
+    10,
+    11
+   ],
+   "narration_text": null,
+   "motion": {
+    "zoom": [
+     1.0,
+     1.12
+    ],
+    "from": [
+     0.5,
+     0.5
+    ],
+    "to": [
+     0.55,
+     0.55
+    ]
+   },
+   "transition_in": {
+    "type": "cut",
+    "dur": 0
+   },
+   "sfx": "police radio crackle/chatter"
+  },
+  {
+   "n": 10,
+   "file": "footage/f16.png",
+   "start": 36.775,
+   "end": 40.385,
+   "content": "checkpoint, flashlights",
+   "narration_phrases": [
+    12
+   ],
+   "narration_text": null,
+   "motion": {
+    "zoom": [
+     1.12,
+     1.0
+    ],
+    "from": [
+     0.55,
+     0.45
+    ],
+    "to": [
+     0.5,
+     0.5
+    ]
+   },
+   "transition_in": {
+    "type": "whip",
+    "dur": 0.2,
+    "dir": 1
+   },
+   "sfx": "crowd of officers, idling engines, flashlight click"
+  },
+  {
+   "n": 11,
+   "file": "footage/f24.png",
+   "start": 40.385,
+   "end": 43.995,
+   "content": "trembling hands, checkpoint ahead",
+   "narration_phrases": [
+    13,
+    14
+   ],
+   "narration_text": null,
+   "motion": {
+    "zoom": [
+     1.0,
+     1.12
+    ],
+    "from": [
+     0.5,
+     0.5
+    ],
+    "to": [
+     0.3,
+     0.45
+    ]
+   },
+   "transition_in": {
+    "type": "dissolve",
+    "dur": 0.33
+   },
+   "sfx": "heartbeat up, wipers"
+  },
+  {
+   "n": 12,
+   "file": "footage/f03.png",
+   "start": 43.995,
+   "end": 47.445,
+   "content": "choice card: cooperate / flee",
+   "narration_phrases": [
+    15
+   ],
+   "narration_text": null,
+   "motion": {
+    "zoom": [
+     1.0,
+     1.04
+    ],
+    "from": [
+     0.5,
+     0.5
+    ],
+    "to": [
+     0.5,
+     0.5
+    ]
+   },
+   "transition_in": {
+    "type": "flash",
+    "dur": 0.23
+   },
+   "sfx": "riser + impact (flash)"
+  },
+  {
+   "n": 13,
+   "file": "footage/f01_clip.mp4",
+   "start": 47.445,
+   "end": 52.565,
+   "content": "B is chosen",
+   "narration_phrases": [
+    16,
+    17
+   ],
+   "narration_text": null,
+   "motion": {
+    "zoom": [
+     1.0,
+     1.05
+    ],
+    "from": [
+     0.5,
+     0.5
+    ],
+    "to": [
+     0.45,
+     0.45
+    ]
+   },
+   "transition_in": {
+    "type": "dissolve",
+    "dur": 0.33
+   },
+   "sfx": "UI chime / shimmer on B"
+  },
+  {
+   "n": 14,
+   "file": "footage/f14.png",
+   "start": 52.565,
+   "end": 55.845,
+   "content": "foot on the gas, tyres smoking",
+   "narration_phrases": [
+    18
+   ],
+   "narration_text": null,
+   "motion": {
+    "zoom": [
+     1.0,
+     1.15
+    ],
+    "from": [
+     0.5,
+     0.5
+    ],
+    "to": [
+     0.5,
+     0.72
+    ]
+   },
+   "transition_in": {
+    "type": "whip",
+    "dur": 0.2,
+    "dir": 1
+   },
+   "sfx": "engine rev + tyre screech"
+  },
+  {
+   "n": 15,
+   "file": "footage/f23.png",
+   "start": 55.845,
+   "end": 60.485,
+   "content": "smashing through the checkpoint",
+   "narration_phrases": [
+    19,
+    20
+   ],
+   "narration_text": null,
+   "motion": {
+    "zoom": [
+     1.0,
+     1.15
+    ],
+    "from": [
+     0.5,
+     0.5
+    ],
+    "to": [
+     0.4,
+     0.55
+    ]
+   },
+   "transition_in": {
+    "type": "cut",
+    "dur": 0
+   },
+   "sfx": "barrier crash + debris"
+  },
+  {
+   "n": 16,
+   "file": "footage/f15.png",
+   "start": 60.485,
+   "end": 64.895,
+   "content": "police cars chasing",
+   "narration_phrases": [
+    21,
+    22
+   ],
+   "narration_text": null,
+   "motion": {
+    "zoom": [
+     1.0,
+     1.15
+    ],
+    "from": [
+     0.5,
+     0.5
+    ],
+    "to": [
+     0.42,
+     0.6
+    ]
+   },
+   "transition_in": {
+    "type": "whip",
+    "dur": 0.2,
+    "dir": 1
+   },
+   "sfx": "sirens chasing, engines"
+  },
+  {
+   "n": 17,
+   "file": "footage/f28.png",
+   "start": 64.895,
+   "end": 69.485,
+   "content": "speeding through the night",
+   "narration_phrases": [
+    23,
+    24
+   ],
+   "narration_text": null,
+   "motion": {
+    "zoom": [
+     1.0,
+     1.12
+    ],
+    "from": [
+     0.5,
+     0.5
+    ],
+    "to": [
+     0.5,
+     0.55
+    ]
+   },
+   "transition_in": {
+    "type": "dissolve",
+    "dur": 0.33
+   },
+   "sfx": "wind/road roar at speed"
+  },
+  {
+   "n": 18,
+   "file": "footage/f27_bg.png",
+   "start": 69.485,
+   "end": 73.035,
+   "content": "speedometer",
+   "narration_phrases": [
+    25
+   ],
+   "narration_text": null,
+   "motion": {
+    "zoom": [
+     1.12,
+     1.0
+    ],
+    "from": [
+     0.5,
+     0.5
+    ],
+    "to": [
+     0.5,
+     0.5
+    ]
+   },
+   "transition_in": {
+    "type": "cut",
+    "dur": 0
+   },
+   "sfx": "engine high rpm"
+  },
+  {
+   "n": 19,
+   "file": "footage/f11.png",
+   "start": 73.035,
+   "end": 77.985,
+   "content": "caught: hands up, flashlight",
+   "narration_phrases": [
+    26,
+    27
+   ],
+   "narration_text": null,
+   "motion": {
+    "zoom": [
+     1.0,
+     1.15
+    ],
+    "from": [
+     0.5,
+     0.5
+    ],
+    "to": [
+     0.5,
+     0.4
+    ]
+   },
+   "transition_in": {
+    "type": "flash",
+    "dur": 0.23
+   },
+   "sfx": "riser + impact (flash), shouts 'stop!'"
+  },
+  {
+   "n": 20,
+   "file": "footage/f04.png",
+   "start": 77.985,
+   "end": 82.255,
+   "content": "officer and the scared driver",
+   "narration_phrases": [
+    28,
+    29,
+    30
+   ],
+   "narration_text": null,
+   "motion": {
+    "zoom": [
+     1.12,
+     1.0
+    ],
+    "from": [
+     0.45,
+     0.42
+    ],
+    "to": [
+     0.5,
+     0.5
+    ]
+   },
+   "transition_in": {
+    "type": "dissolve",
+    "dur": 0.33
+   },
+   "sfx": "tense room tone"
+  },
+  {
+   "n": 21,
+   "file": "footage/f12.png",
+   "start": 82.255,
+   "end": 86.435,
+   "content": "alone in the interrogation room",
+   "narration_phrases": [
+    31,
+    32
+   ],
+   "narration_text": null,
+   "motion": {
+    "zoom": [
+     1.0,
+     1.12
+    ],
+    "from": [
+     0.5,
+     0.5
+    ],
+    "to": [
+     0.45,
+     0.5
+    ]
+   },
+   "transition_in": {
+    "type": "dip",
+    "dur": 0.4
+   },
+   "sfx": "room tone, buzzing fluorescent light, clock tick",
+   "rise_from_dark": 0.8
+  },
+  {
+   "n": 22,
+   "file": "footage/f05.png",
+   "start": 86.435,
+   "end": 89.875,
+   "content": "interrogation",
+   "narration_phrases": [
+    33,
+    34
+   ],
+   "narration_text": null,
+   "motion": {
+    "zoom": [
+     1.12,
+     1.0
+    ],
+    "from": [
+     0.5,
+     0.5
+    ],
+    "to": [
+     0.5,
+     0.5
+    ]
+   },
+   "transition_in": {
+    "type": "dissolve",
+    "dur": 0.33
+   },
+   "sfx": "chair creak, clock tick"
+  },
+  {
+   "n": 23,
+   "file": "footage/f13.png",
+   "start": 89.875,
+   "end": 93.555,
+   "content": "interrogation with the file",
+   "narration_phrases": [
+    35
+   ],
+   "narration_text": null,
+   "motion": {
+    "zoom": [
+     1.0,
+     1.12
+    ],
+    "from": [
+     0.5,
+     0.5
+    ],
+    "to": [
+     0.5,
+     0.55
+    ]
+   },
+   "transition_in": {
+    "type": "dissolve",
+    "dur": 0.33
+   },
+   "sfx": "file slapped on table"
+  },
+  {
+   "n": 24,
+   "file": "footage/f07.png",
+   "start": 93.555,
+   "end": 97.755,
+   "content": "searching the car",
+   "narration_phrases": [
+    36,
+    37
+   ],
+   "narration_text": null,
+   "motion": {
+    "zoom": [
+     1.08,
+     1.08
+    ],
+    "from": [
+     0.5,
+     0.3
+    ],
+    "to": [
+     0.5,
+     0.7
+    ]
+   },
+   "transition_in": {
+    "type": "whip",
+    "dur": 0.2,
+    "dir": 1
+   },
+   "sfx": "whoosh (whip) + rummaging under seat"
+  },
+  {
+   "n": 25,
+   "file": "footage/f09.png",
+   "start": 97.755,
+   "end": 100.545,
+   "content": "money under the seat",
+   "narration_phrases": [
+    38
+   ],
+   "narration_text": null,
+   "motion": {
+    "zoom": [
+     1.0,
+     1.12
+    ],
+    "from": [
+     0.5,
+     0.5
+    ],
+    "to": [
+     0.38,
+     0.62
+    ]
+   },
+   "transition_in": {
+    "type": "dissolve",
+    "dur": 0.33
+   },
+   "sfx": "plastic wrap crinkle"
+  },
+  {
+   "n": 26,
+   "file": "footage/f08.png",
+   "start": 100.545,
+   "end": 105.235,
+   "content": "stacks of money on the desk",
+   "narration_phrases": [
+    39,
+    40
+   ],
+   "narration_text": null,
+   "motion": {
+    "zoom": [
+     1.12,
+     1.0
+    ],
+    "from": [
+     0.45,
+     0.65
+    ],
+    "to": [
+     0.5,
+     0.5
+    ]
+   },
+   "transition_in": {
+    "type": "cut",
+    "dur": 0
+   },
+   "sfx": "banknote stacks thud"
+  },
+  {
+   "n": 27,
+   "file": "footage/f10.png",
+   "start": 105.235,
+   "end": 109.255,
+   "content": "evidence board",
+   "narration_phrases": [
+    41,
+    42
+   ],
+   "narration_text": null,
+   "motion": {
+    "zoom": [
+     1.0,
+     1.12
+    ],
+    "from": [
+     0.5,
+     0.5
+    ],
+    "to": [
+     0.5,
+     0.4
+    ]
+   },
+   "transition_in": {
+    "type": "dissolve",
+    "dur": 0.33
+   },
+   "sfx": "pin/marker squeak"
+  },
+  {
+   "n": 28,
+   "file": "footage/f06.png",
+   "start": 109.255,
+   "end": 112.43,
+   "content": "officer crosses off days",
+   "narration_phrases": [
+    43
+   ],
+   "narration_text": null,
+   "motion": {
+    "zoom": [
+     1.12,
+     1.0
+    ],
+    "from": [
+     0.45,
+     0.45
+    ],
+    "to": [
+     0.5,
+     0.5
+    ]
+   },
+   "transition_in": {
+    "type": "dissolve",
+    "dur": 0.33
+   },
+   "sfx": "marker stroke on calendar, clock tick"
+  }
+ ]
+}
