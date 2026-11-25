@@ -1,0 +1,8 @@
+reference/
+narration/*.wav
+narration/*.mp3
+footage/
+sfx/
+music/
+output/*.mp4
+output/*.wav
