@@ -32,6 +32,14 @@ done
 # claude-shorts (its install.sh needs rsync, so copy by hand)
 mkdir -p "$S/shorts" && cp -r AgriciDaniel_claude-shorts/{SKILL.md,scripts,references} "$S/shorts/"
 copy AgriciDaniel_claude-shorts/remotion shorts/remotion && (cd "$S/shorts/remotion" && npm install --no-audit --no-fund -s)
+# ghost-editor hardcodes gemini-2.5-flash/-pro, which Google has retired (404). Point them at a live model.
+GE_MODEL="${GHOST_GEMINI_MODEL:-gemini-3.5-flash-lite}"
+grep -rlE 'gemini-2\.5-(flash|pro)([^-]|$)' --include=*.py --include=*.sh --include=*.mjs "$S/ghost-editor/scripts" 2>/dev/null \
+  | xargs -r sed -i -E "s/gemini-2\.5-(flash|pro)([^-a-z]|\$)/$GE_MODEL\2/g"
+# ghost-editor reads GEMINI_API_KEY from the environment; set it in the cloud environment's variables, not in the repo.
+# Sound effects + music library (needs assets.mixkit.co):
+python3 "$S/ghost-editor/scripts/library_restore.py" --sfx-only >/dev/null 2>&1 || true
+python3 "$S/ghost-editor/scripts/library_restore.py" --music-only >/dev/null 2>&1 || true
 echo "Installed $(ls "$S"/*/SKILL.md | wc -l) skills"
 # The 4 wrapper skills (yt-dlp, whisper-transcribe, motionclone, awesome-claude-video-skills) live in this
 # repo's .claude/skills and load automatically as project skills.
