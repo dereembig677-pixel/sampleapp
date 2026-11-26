@@ -2,7 +2,7 @@
 # Reinstalls the 15 Claude video-editor repos as skills into ~/.claude/skills.
 # Usable as a cloud-environment setup script. Needs github.com, pypi.org, registry.npmjs.org.
 set -uo pipefail
-R=/opt/claude-video-repos; S="$HOME/.claude/skills"; mkdir -p "$R/iart-packs" "$S"
+R="${REPOS_DIR:-/opt/claude-video-repos}"; S="${SKILLS_DIR:-$HOME/.claude/skills}"; mkdir -p "$R/iart-packs" "$S"
 clone() { [ -d "$2/.git" ] || git clone -q --depth 1 "https://github.com/$1.git" "$2"; }
 
 for r in kajisho5/ffmpeg-skill howseen-ai/claude-motion-design kurbaitaev/ghost-editor AgriciDaniel/claude-shorts \
