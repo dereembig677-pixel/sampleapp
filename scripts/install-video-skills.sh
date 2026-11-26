@@ -15,7 +15,7 @@ for p in tiktok-video text-message-video youtube-video ecommerce-video ad-video 
   clone "iart-ai/$p-skills" "$R/iart-packs/$p-skills"; done
 
 # yt-dlp + whisper (torch comes from PyPI; download.pytorch.org is usually blocked)
-pip install -q -U yt-dlp openai-whisper faster-whisper mediapipe opencv-python-headless numpy pillow google-genai
+pip install -q -U yt-dlp openai-whisper faster-whisper mediapipe opencv-python-headless numpy pillow google-genai "av<19"  # av 19 breaks faster-whisper (metadata_errors)
 
 cd "$R"
 copy() { mkdir -p "$S/$2" && tar -C "$1" --exclude .git --exclude node_modules --exclude ./.claude --exclude ./.agents -cf - . | tar -C "$S/$2" -xf -; }
