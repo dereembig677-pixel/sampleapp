@@ -1,0 +1,194 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face{font-family:PE;src:url(Peyda.ttf)}
+@font-face{font-family:MO;src:url(Morabba.ttf)}
+html,body{margin:0;background:transparent}
+</style></head><body>
+<canvas id="c" width="1080" height="1920"></canvas>
+<script>
+const W=1080,H=1920,cv=document.getElementById('c'),ctx=cv.getContext('2d');
+window.ready=Promise.all([document.fonts.load('80px PE','سلام'),document.fonts.load('80px MO','سلام')]);
+const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x)), lin=(t,a,b)=>clamp((t-a)/(b-a));
+const eOut=p=>1-Math.pow(1-p,3), eIn=p=>p*p*p, eIO=p=>p<.5?4*p*p*p:1-Math.pow(-2*p+2,3)/2;
+const eBack=p=>{const c=2.2;return 1+(c+1)*Math.pow(p-1,3)+c*Math.pow(p-1,2)};
+const rnd=s=>{const x=Math.sin(s*12.9898)*43758.5453;return x-Math.floor(x)};
+function rr(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
+// window in/out envelope with pop
+function env(t,a,b,ia=0.18,oa=0.18){if(t<a||t>b)return 0;return Math.min(eOut(lin(t,a,a+ia)),1-eIn(lin(t,b-oa,b)))}
+function pop(t,a,d=0.3){const p=lin(t,a,a+d);return p<=0?0:eBack(p)}
+
+// ---------------- subtitles ----------------
+// style: n=normal, neg=red, fire=fire, good=green, sub=subscribe red, big=extra
+const P=[
+ [['رفقا',0.00,0.44],['متاسفانه',0.44,1.12]],
+ [['یه',1.12,1.30],['دونه',1.30,1.50],['ابزار',1.50,1.82]],
+ [['از',1.82,2.00],['دست',2.00,2.22],['دادیم!',2.22,2.78,'neg']],
+ [['کله‌ش',2.78,3.42],['پرید',3.42,3.78,'neg']],
+ [['و',3.78,3.94],['باید',3.94,5.00],['سرشو',5.00,5.58]],
+ [['یه',5.58,5.80],['حالتی',5.80,7.00]],
+ [['بکنیم',9.36,9.72],['که',9.72,9.92],['کار',9.92,10.62]],
+ [['بهمون',10.62,10.92],['بده',10.92,11.18]],
+ [['ولی',11.18,11.40],['نداد!',11.40,11.80,'neg']],
+ [['رفتیم',12.48,12.88],['یه',12.88,13.00],['دونه',13.00,13.10]],
+ [['بچه‌تورچ',13.10,13.72,'fire'],['گرفتیم',13.72,14.34]],
+ [['باز',14.34,14.58],['جواب',14.58,14.96],['نداد!',14.96,15.40,'neg']],
+ [['الان',16.10,16.48],['رفتیم',16.48,16.98],['یه',16.98,17.60],['دونه',17.60,18.26]],
+ [['بکس',18.26,19.12,'big'],['۳۵',19.12,20.48,'big']],
+ [['فشارقوی',20.48,21.46],['سه‌چهارم',21.46,23.00]],
+ [['با',23.54,24.02],['دسته‌بکسش',24.02,24.78]],
+ [['فراهم',24.78,25.24],['کردیم',25.24,25.76]],
+ [['با',26.50,26.96],['تورچ',26.96,27.56,'fire'],['می‌خوایم',27.56,29.38]],
+ [['این',29.38,29.62],['پلوس‌رو',29.62,30.12,'big'],['باز',30.12,30.28],['کنیم',30.28,30.90]],
+ [['امیدوارم',32.46,33.10],['که',33.10,33.74],['بتونیم',33.74,34.40]],
+ [['بازش',34.40,34.74],['کنیم',34.74,35.06]],
+ [['و',35.06,35.18],['دهنمون‌رو',35.18,35.74],['سرویس',35.74,36.00,'neg'],['نکنه!',36.00,36.44,'neg']],
+ [['بریم',36.44,36.54],['تو',36.54,36.64],['کارش',36.64,36.88]],
+ [['خب',36.88,37.32],['رفقا',37.32,37.76],['بالاخره',37.76,38.50]],
+ [['حس',38.50,39.00],['می‌کنم',39.00,39.38],['که',39.38,39.52],['باز',39.52,39.74],['شده',39.74,40.02,'good']],
+ [['اما',40.02,40.40],['باز',40.58,40.82],['شده؟',40.82,41.06]],
+ [['نه!',41.06,41.28,'neg']],
+ [['فکر',41.28,42.20],['نکنم',42.20,42.90]],
+ [['نه...',48.22,48.86,'neg']],
+ [['امیدوارم',49.66,50.04],['در',50.04,50.26],['حال',50.26,50.38]],
+ [['باز',50.38,50.60],['شدن',50.60,50.86],['هم',50.86,50.96],['باشه',50.96,51.40]],
+ [['بیاید',57.44,58.38],['اینجا',58.38,58.66]],
+ [['رفقا',58.66,59.36],['بالاخره',59.36,60.08]],
+ [['بازش',60.08,60.86,'good'],['کردیم!',60.86,61.34,'good']],
+ [['داغه',61.34,61.60,'fire'],['داغه',61.60,61.86,'fire']],
+ [['دستم',61.86,62.16],['داره',62.16,62.34],['می‌سوزه!',62.34,62.86,'fire']],
+ [['با',62.86,63.04],['دستکش',63.04,63.36],['حتی!',63.36,63.80]],
+ [['خیلی',65.08,66.02],['سخت',66.02,66.32,'neg'],['بود',66.32,67.06]],
+ [['بیاید',71.72,72.66],['سابسکرایب',72.72,73.28,'sub'],['کنید',73.28,73.74]],
+ [['برای',73.74,74.40],['دیدن',74.40,74.70]],
+ [['بازسازی',74.70,75.42,'good'],['کامل',75.42,76.40]],
+ [['این',76.92,77.28],['تویوتا',77.28,78.36],['پرادو',78.36,78.84,'big']],
+ [['بیاید',79.12,79.94],['داخل',79.94,80.18],['چنل',80.18,80.60,'sub']],
+];
+const ST={n:['#FFF27A','#FFC400'],big:['#FFF27A','#FFC400'],neg:['#FF4D5E','#FF1744'],fire:['#FFB13B','#FF5A00'],good:['#6BFF9A','#00E676'],sub:['#FF4D4D','#FF1A1A']};
+const NEON='#2FE6FF';
+function subY(t){return (t>72.2&&t<80.7)?1250:1330}
+function subtitles(t){
+  for(let i=0;i<P.length;i++){const ph=P[i];const s0=ph[0][1],last=ph[ph.length-1];
+    const next=P[i+1]?P[i+1][0][1]:1e9;const end=Math.min(next-0.02,last[2]+0.45);
+    if(t<s0-0.06||t>=end)continue;
+    let size=ph.some(w=>w[3]==='big')?96:86;ctx.save();ctx.direction='rtl';ctx.textBaseline='alphabetic';
+    let ws,sp,tot;for(;;){ctx.font=`${size}px PE`;sp=size*0.28;ws=ph.map(w=>ctx.measureText(w[0]).width);tot=ws.reduce((a,b)=>a+b,0)+sp*(ph.length-1);if(tot<900||size<56)break;size-=4}
+    const y=subY(t);const ap=lin(t,s0-0.06,s0+0.08), out=1-lin(t,end-0.08,end);
+    const ps=0.88+0.12*eOut(ap);ctx.translate(W/2,y);ctx.scale(ps,ps);ctx.translate(-W/2,-y);ctx.globalAlpha=Math.min(eOut(ap),out);
+    let xr=W/2+tot/2;
+    ph.forEach((w,k)=>{const [txt,ws0,we0,sty='n']=w;const st=ST[sty];
+      const active=t>=ws0&&t<we0+0.04, done=t>=we0+0.04, before=t<ws0;
+      const pk=active?eBack(lin(t,ws0,ws0+0.16)):1;const sc=active?(0.9+0.16*pk):1;const cx=xr-ws[k]/2;
+      ctx.save();ctx.translate(cx,y-(active?8:0));ctx.scale(sc,sc);ctx.translate(-cx,-y);ctx.textAlign='right';
+      // readability base
+      ctx.lineJoin='round';ctx.shadowColor='rgba(0,0,0,0.85)';ctx.shadowBlur=18;ctx.lineWidth=14;ctx.strokeStyle='rgba(0,0,0,0.55)';ctx.strokeText(txt,xr,y);
+      const emph=sty!=='n';
+      let fill,glow,gb;
+      if(active){fill=st[0];glow=st[1];gb=34}else if(done){fill=emph?st[0]:'#FFFFFF';glow=emph?st[1]:NEON;gb=emph?20:16}else{fill='rgba(255,255,255,0.55)';glow='rgba(47,230,255,0.4)';gb=8}
+      if(sty==='fire'&&(active||done)){const g=ctx.createLinearGradient(0,y-size,0,y);g.addColorStop(0,'#FFE36B');g.addColorStop(.55,'#FF9A1F');g.addColorStop(1,'#FF3D00');fill=g}
+      ctx.shadowColor=glow;ctx.shadowBlur=gb;ctx.lineWidth=4;ctx.strokeStyle=glow;ctx.strokeText(txt,xr,y);
+      ctx.fillStyle=fill;ctx.fillText(txt,xr,y);if(active){ctx.shadowBlur=gb*1.6;ctx.globalAlpha*=0.5;ctx.fillText(txt,xr,y)}
+      ctx.restore();xr-=ws[k]+sp});
+    ctx.restore()}
+}
+// ---------------- text helpers ----------------
+function ptext(txt,x,y,size,font='PE',fill='#fff',glow=null,gb=0,align='center',alpha=1){ctx.save();ctx.direction='rtl';ctx.font=`${size}px ${font}`;ctx.textAlign=align;ctx.globalAlpha=alpha;
+  ctx.lineJoin='round';ctx.shadowColor='rgba(0,0,0,.8)';ctx.shadowBlur=16;ctx.lineWidth=size*0.14;ctx.strokeStyle='rgba(0,0,0,.5)';ctx.strokeText(txt,x,y);
+  if(glow){ctx.shadowColor=glow;ctx.shadowBlur=gb;ctx.lineWidth=3;ctx.strokeStyle=glow;ctx.strokeText(txt,x,y)}ctx.fillStyle=fill;ctx.fillText(txt,x,y);ctx.restore()}
+function chip(txt,x,y,size,col,a,sc=1,sub=null){ctx.save();ctx.direction='rtl';ctx.font=`${size}px PE`;const w=ctx.measureText(txt).width;let w2=0;if(sub){ctx.font=`${size*0.72}px MO`;w2=ctx.measureText(sub).width}
+  const bw=Math.max(w,w2)+size*1.1,bh=sub?size*2.15:size*1.5;ctx.translate(x,y);ctx.scale(sc,sc);ctx.globalAlpha=a;
+  rr(-bw/2,-bh/2,bw,bh,bh*0.32);ctx.fillStyle='rgba(8,10,16,0.72)';ctx.fill();ctx.shadowColor=col;ctx.shadowBlur=26;ctx.lineWidth=4;ctx.strokeStyle=col;ctx.stroke();
+  ctx.shadowBlur=18;ctx.textAlign='center';ctx.fillStyle='#fff';ctx.font=`${size}px PE`;ctx.fillText(txt,0,sub?-bh*0.04:size*0.36);
+  if(sub){ctx.shadowBlur=8;ctx.shadowColor='#fff';ctx.font=`${size*0.72}px MO`;ctx.fillStyle='#fff';ctx.fillText(sub,0,bh*0.33)}ctx.restore()}
+
+// ---------------- moments ----------------
+function hook(t){const a=env(t,0.10,3.0,0.25,0.3);if(!a)return;const p=pop(t,0.10,0.35);
+  ctx.save();ctx.translate(W/2,300);ctx.scale(0.7+0.3*p,0.7+0.3*p);ctx.translate(-W/2,-300);
+  ptext('مهره‌ای که',W/2,250,70,'MO','#fff',NEON,14,'center',a);
+  ptext('باز نمی‌شد!',W/2,375,132,'PE','#FFF27A','#FFC400',30,'center',a);ctx.restore()}
+function crack(t){const p=lin(t,3.40,3.95);if(p<=0||p>=1)return;ctx.save();ctx.globalAlpha=1-eIn(p);ctx.strokeStyle='#fff';ctx.shadowColor=NEON;ctx.shadowBlur=20;ctx.lineCap='round';
+  const cx=560,cy=860;for(let k=0;k<9;k++){let x=cx,y=cy;const a=k/9*Math.PI*2+rnd(k)*0.5;ctx.lineWidth=6-k*0.3;ctx.beginPath();ctx.moveTo(x,y);
+    const L=(140+rnd(k+3)*200)*eOut(lin(t,3.40,3.52));for(let s=1;s<=5;s++){x=cx+Math.cos(a+(rnd(k*7+s)-.5)*0.6)*L*s/5;y=cy+Math.sin(a+(rnd(k*5+s)-.5)*0.6)*L*s/5;ctx.lineTo(x,y)}ctx.stroke()}
+  ctx.restore()}
+function xstamp(t){const a=env(t,14.96,15.95,0.05,0.25);if(!a)return;const p=lin(t,14.96,15.16);const s=1.7-0.7*eOut(p);
+  ctx.save();ctx.translate(W/2,700);ctx.rotate(-0.2);ctx.scale(s,s);ctx.globalAlpha=a;ctx.shadowColor='#FF1744';ctx.shadowBlur=40;
+  ctx.lineWidth=18;ctx.strokeStyle='#FF3B4E';ctx.beginPath();ctx.arc(0,0,150,0,7);ctx.stroke();ctx.lineCap='round';ctx.lineWidth=26;
+  ctx.beginPath();ctx.moveTo(-70,-70);ctx.lineTo(70,70);ctx.moveTo(70,-70);ctx.lineTo(-70,70);ctx.stroke();ctx.restore()}
+function boxingLabels(t){
+  const a=env(t,19.0,21.30,0.2,0.08);if(a){const p=pop(t,19.0);chip('🥊 این بکس؟',W/2,330,66,'#FF4D5E',a,0.6+0.4*p);
+    const q=lin(t,20.45,20.65);if(q>0){ctx.save();ctx.globalAlpha=a;ctx.strokeStyle='#FF1744';ctx.shadowColor='#FF1744';ctx.shadowBlur=20;ctx.lineWidth=12;ctx.lineCap='round';
+      ctx.beginPath();ctx.moveTo(W/2+260,330);ctx.lineTo(W/2+260-520*eOut(q),330);ctx.stroke();ctx.restore()}}
+  const b=env(t,21.32,22.55,0.1,0.2);if(b)chip('نه، این بکس! 🔧',W/2,330,66,'#6BFF9A',b,0.6+0.4*pop(t,21.32));
+  const c1=env(t,22.45,25.9,0.2,0.25);if(c1)chip('بکس ۳۵',830,330,62,NEON,c1,0.6+0.4*pop(t,22.45),'فشارقوی');
+  const c2=env(t,22.70,25.9,0.2,0.25);if(c2)chip('درایو ۳/۴',830,560,62,NEON,c2,0.6+0.4*pop(t,22.70),'دسته‌بکس بلند');
+}
+function carLabel(t){const a=env(t,29.42,31.30,0.18,0.12);if(!a)return;const p=pop(t,29.42);
+  ctx.save();ctx.translate(W/2,520);ctx.scale(0.6+0.4*p,0.6+0.4*p);ctx.translate(-W/2,-520);
+  ptext('پلوس',W/2,520,150,'PE','#FFF27A','#FFC400',34,'center',a);ptext('شفت انتقال نیرو به چرخ',W/2,610,62,'MO','#fff',NEON,10,'center',a);ctx.restore()}
+function padlock(t){const a=env(t,39.40,41.95,0.2,0.25);if(!a)return;const fail=t>=41.06;const p=pop(t,39.40);
+  const lift=fail?0:Math.max(0,Math.sin((t-39.5)*7))*26*lin(t,39.6,40.0);const sh=fail?Math.sin(t*90)*14*(1-lin(t,41.06,41.5)):0;
+  const col=fail?'#FF3B4E':NEON;ctx.save();ctx.translate(W/2+sh,560);ctx.scale(0.6+0.4*p,0.6+0.4*p);ctx.globalAlpha=a;ctx.shadowColor=col;ctx.shadowBlur=30;
+  ctx.lineWidth=20;ctx.strokeStyle=col;ctx.beginPath();ctx.arc(0,-70-lift,62,Math.PI,0);ctx.lineTo(62,-10-lift);ctx.moveTo(-62,-70-lift);ctx.lineTo(-62,-30);ctx.stroke();
+  rr(-100,-40,200,160,30);ctx.fillStyle='rgba(8,10,16,.75)';ctx.fill();ctx.lineWidth=10;ctx.stroke();
+  ctx.fillStyle=col;ctx.beginPath();ctx.arc(0,25,18,0,7);ctx.fill();ctx.fillRect(-7,30,14,40);
+  if(fail){ctx.lineWidth=14;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(110,-150);ctx.lineTo(190,-70);ctx.moveTo(190,-150);ctx.lineTo(110,-70);ctx.stroke()}
+  ctx.restore()}
+function powerMeter(t){const a=env(t,42.95,49.10,0.25,0.35);if(!a)return;
+  let lv=0.08+0.89*eIO(lin(t,43.1,47.3))+Math.sin(t*23)*0.02;if(t>48.22)lv=lv*(1-eOut(lin(t,48.22,48.7)))+0.15*eOut(lin(t,48.22,48.7));
+  const x=70,y=620,w=78,h=700,sh=t<48.2?Math.sin(t*61)*4*lin(t,45,47.3):0;
+  ctx.save();ctx.globalAlpha=a;ctx.translate(sh,0);ptext('زور',x+w/2,y-34,58,'PE','#fff',NEON,14,'center',a);
+  rr(x,y,w,h,w/2);ctx.fillStyle='rgba(8,10,16,.7)';ctx.fill();ctx.lineWidth=5;ctx.strokeStyle=NEON;ctx.shadowColor=NEON;ctx.shadowBlur=20;ctx.stroke();
+  ctx.save();rr(x+9,y+9,w-18,h-18,(w-18)/2);ctx.clip();const fh=(h-18)*lv;const g=ctx.createLinearGradient(0,y+h,0,y);g.addColorStop(0,'#00E676');g.addColorStop(.55,'#FFD400');g.addColorStop(1,'#FF1744');
+  ctx.fillStyle=g;ctx.shadowBlur=0;ctx.fillRect(x,y+h-9-fh,w,fh);ctx.restore();
+  const pct=Math.round(lv*100).toLocaleString('fa-IR');ptext(pct+'٪',x+w/2,y+h+70,54,'PE',lv>0.8?'#FF4D5E':'#fff',null,0,'center',a);ctx.restore()}
+function mashallah(t){const T=[[53.62,118,'#FFF27A','#FFC400'],[55.08,150,'#6BFF9A','#00E676'],[55.74,196,'#FFB13B','#FF5A00']];const end=57.25;if(t<53.55||t>end)return;
+  const fade=1-lin(t,end-0.3,end);
+  T.forEach(([t0,size,f,g],i)=>{if(t<t0)return;const n=T.filter(q=>q[0]<=t).length-1;const lvl=n-i;const p=pop(t,t0,0.32);
+    const y=980-lvl*175*eOut(lin(t,T[Math.min(i+lvl,2)][0],T[Math.min(i+lvl,2)][0]+0.2));const s=(lvl>0?0.72:1)*(0.5+0.5*p);
+    ctx.save();ctx.translate(W/2,y);ctx.scale(s,s);ctx.rotate((i-1)*0.05);ptext('ماشالله!',0,0,size,'PE',f,g,40,'center',fade*(lvl>0?0.85:1));ctx.restore();
+    const rp=lin(t,t0,t0+0.5);if(rp>0&&rp<1){ctx.save();ctx.globalAlpha=(1-rp)*0.9*fade;ctx.strokeStyle=g;ctx.shadowColor=g;ctx.shadowBlur=30;ctx.lineWidth=10*(1-rp)+2;ctx.beginPath();ctx.ellipse(W/2,y-size*0.3,120+rp*420,60+rp*200,0,0,7);ctx.stroke();ctx.restore()}})}
+function success(t){const a=env(t,60.80,61.45,0.08,0.2);if(!a)return;const p=pop(t,60.80,0.3);ctx.save();ctx.translate(W/2,560);ctx.scale(p,p);ctx.globalAlpha=a;
+  ctx.shadowColor='#00E676';ctx.shadowBlur=40;ctx.lineWidth=16;ctx.strokeStyle='#6BFF9A';ctx.beginPath();ctx.arc(0,0,120,0,7);ctx.stroke();
+  ctx.lineCap='round';ctx.lineJoin='round';ctx.lineWidth=24;const q=eOut(lin(t,60.88,61.05));ctx.beginPath();ctx.moveTo(-55,0);ctx.lineTo(-55+40*Math.min(1,q*2),40*Math.min(1,q*2));if(q>0.5)ctx.lineTo(-15+75*(q-0.5)*2,40-100*(q-0.5)*2);ctx.stroke();ctx.restore()}
+function thermo(t){const a=env(t,61.25,64.0,0.2,0.35);if(!a)return;const lv=eOut(lin(t,61.3,62.9));const x=110,y=560,h=620;const shake=Math.sin(t*70)*3*lv;
+  ctx.save();ctx.globalAlpha=a;ctx.translate(shake,0);const col='#FF5A00';ctx.shadowColor=col;ctx.shadowBlur=26;
+  rr(x-30,y,60,h,30);ctx.fillStyle='rgba(8,10,16,.7)';ctx.fill();ctx.lineWidth=6;ctx.strokeStyle='#FFB13B';ctx.stroke();
+  ctx.beginPath();ctx.arc(x,y+h+40,62,0,7);ctx.fillStyle='#FF3D00';ctx.fill();ctx.stroke();
+  const fh=(h-30)*lv;const g=ctx.createLinearGradient(0,y+h,0,y);g.addColorStop(0,'#FF3D00');g.addColorStop(1,'#FFE36B');ctx.fillStyle=g;rr(x-16,y+h-fh,32,fh+30,16);ctx.fill();
+  const deg=Math.round(30+150*lv).toLocaleString('fa-IR');ptext(deg+'°',x+44,y-30,68,'PE','#FFE36B','#FF5A00',24,'center',a);ctx.restore()}
+function contd(t){const a=env(t,67.50,71.40,0.3,0.3);if(!a)return;const n=Math.floor(t*3)%4;ptext('ادامه دارد'+'.'.repeat(n),W/2,1330,96,'MO','#fff',NEON,26,'center',a)}
+// ---------------- CTA ----------------
+function bell(x,y,s,rot,col){ctx.save();ctx.translate(x,y);ctx.rotate(rot);ctx.scale(s,s);ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(-26,14);ctx.quadraticCurveTo(-24,-30,0,-32);ctx.quadraticCurveTo(24,-30,26,14);ctx.lineTo(32,22);ctx.lineTo(-32,22);ctx.closePath();ctx.fill();ctx.beginPath();ctx.arc(0,30,8,0,7);ctx.fill();ctx.restore()}
+function thumb(x,y,s,fillc,stroke){ctx.save();ctx.translate(x,y);ctx.scale(s,s);ctx.beginPath();ctx.moveTo(-34,-6);ctx.lineTo(-14,-6);ctx.lineTo(-2,-40);ctx.quadraticCurveTo(14,-44,12,-22);ctx.lineTo(8,-8);ctx.lineTo(34,-8);ctx.quadraticCurveTo(44,-6,40,6);ctx.lineTo(32,36);ctx.quadraticCurveTo(28,44,18,44);ctx.lineTo(-14,44);ctx.lineTo(-14,-6);ctx.moveTo(-34,-6);ctx.lineTo(-34,44);ctx.lineTo(-20,44);ctx.lineTo(-20,-6);ctx.closePath();
+  if(fillc){ctx.fillStyle=fillc;ctx.fill()}ctx.lineWidth=6;ctx.lineJoin='round';ctx.strokeStyle=stroke;ctx.stroke();ctx.restore()}
+function cursor(x,y,press){ctx.save();ctx.translate(x,y);const s=press?0.85:1;ctx.scale(s,s);ctx.fillStyle='#fff';ctx.strokeStyle='#111';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(0,58);ctx.lineTo(15,45);ctx.lineTo(27,70);ctx.lineTo(37,65);ctx.lineTo(25,41);ctx.lineTo(44,41);ctx.closePath();ctx.fill();ctx.stroke();ctx.restore()}
+function cta(t){const t0=72.30,t1=80.70;if(t<t0||t>t1)return;const inP=eOut(lin(t,t0,t0+0.4)),outP=eIn(lin(t,80.45,80.70));const y=330-260*(1-inP)-320*outP;const a=Math.min(inP,1-outP);
+  ctx.save();ctx.globalAlpha=a;
+  rr(70,y-110,940,220,60);ctx.fillStyle='rgba(10,12,18,0.82)';ctx.fill();ctx.lineWidth=4;ctx.strokeStyle='rgba(255,255,255,0.25)';ctx.stroke();
+  // avatar (generic)
+  ctx.save();ctx.beginPath();ctx.arc(900,y,72,0,7);const ag=ctx.createLinearGradient(830,y-70,970,y+70);ag.addColorStop(0,'#FF8A00');ag.addColorStop(1,'#FF1744');ctx.fillStyle=ag;ctx.fill();
+  ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(900,y-18,24,0,7);ctx.fill();ctx.beginPath();ctx.ellipse(900,y+40,42,28,0,Math.PI,0);ctx.fill();ctx.restore();
+  // subscribe button
+  const subbed=t>=72.98;const bp=subbed?pop(t,72.98,0.3):1;ctx.save();ctx.translate(560,y);ctx.scale(subbed?0.92+0.08*bp:1,subbed?0.92+0.08*bp:1);
+  rr(-230,-58,460,116,58);ctx.fillStyle=subbed?'#3A3A42':'#FF0033';ctx.shadowColor=subbed?'transparent':'#FF0033';ctx.shadowBlur=30;ctx.fill();ctx.shadowBlur=0;
+  ctx.direction='rtl';ctx.textAlign='center';ctx.fillStyle='#fff';ctx.font='54px PE';ctx.fillText(subbed?'سابسکرایب شدی ✓':'سابسکرایب',subbed?10:0,18);ctx.restore();
+  // bell
+  const bt=t-73.05;const rot=bt>0&&bt<0.9?Math.sin(bt*30)*0.5*(1-bt/0.9):0;bell(255,y,1.25,rot,subbed?'#FFD400':'#fff');
+  // like
+  const liked=t>=74.72;const lp=pop(t,74.72,0.35);const lx=150,ly=y+180;const la=eOut(lin(t,74.0,74.3));
+  if(la>0){ctx.save();ctx.globalAlpha=a*la;rr(lx-80,ly-62,300,124,62);ctx.fillStyle='rgba(10,12,18,0.82)';ctx.fill();
+    thumb(lx,ly,1.05*(liked?0.8+0.2*lp:1),liked?'#2FE6FF':null,liked?'#2FE6FF':'#fff');
+    ctx.direction='rtl';ctx.font='50px PE';ctx.textAlign='center';ctx.fillStyle=liked?'#2FE6FF':'#fff';ctx.fillText(liked?'لایک ✓':'لایک',lx+130,ly+18);ctx.restore();
+    const bp2=lin(t,74.72,75.3);if(bp2>0&&bp2<1){for(let k=0;k<12;k++){const an=k/12*Math.PI*2;const r=60+bp2*110;ctx.save();ctx.globalAlpha=(1-bp2)*a;ctx.fillStyle=k%2?'#2FE6FF':'#FFF27A';ctx.beginPath();ctx.arc(lx+Math.cos(an)*r,ly+Math.sin(an)*r,9*(1-bp2)+2,0,7);ctx.fill();ctx.restore()}}}
+  // cursor path: -> subscribe (72.98), -> like (74.72), -> off
+  let cx,cy;const P1=[1100,y+300],P2=[600,y+20],P3=[160,ly+10],P4=[-80,ly+300];
+  const seg=(A,Bq,p)=>[A[0]+(Bq[0]-A[0])*eIO(p),A[1]+(Bq[1]-A[1])*eIO(p)];
+  if(t<72.98)[cx,cy]=seg(P1,P2,lin(t,72.45,72.92));else if(t<74.72)[cx,cy]=seg(P2,P3,lin(t,74.0,74.62));else [cx,cy]=seg(P3,P4,lin(t,75.2,75.9));
+  const press=(t>=72.92&&t<73.06)||(t>=74.66&&t<74.80);if(t<75.9)cursor(cx,cy,press);
+  ctx.restore()}
+
+function render(t){ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,W,H);ctx.globalAlpha=1;ctx.filter='none';
+  hook(t);crack(t);xstamp(t);boxingLabels(t);carLabel(t);padlock(t);powerMeter(t);mashallah(t);success(t);thermo(t);contd(t);cta(t);subtitles(t)}
+window.render=render;
+</script></body></html>

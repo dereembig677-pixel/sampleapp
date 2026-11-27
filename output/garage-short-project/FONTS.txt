@@ -1,0 +1,1 @@
+Fonts are not included (licensed). Place Peyda.ttf (Peyda ExtraBold) and Morabba.ttf (Morabba UltraLight) next to gfx.html before rendering.
