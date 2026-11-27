@@ -25,8 +25,8 @@ Watch the relevant one (contact sheet + a few full-res frames) before designing 
 - Fairly large text is preferred (kicker ~88 px, keyword 160–340 px at 1080 wide), inside the safe zone.
 - Morabba ("فونت مربع", the square font: ExtraBold for keywords, Bold for kickers) is the user's go-to
   Persian display font. Licensed: never commit it.
-- Reference 01's **pixel squares**: use them ONLY as a burst when a B-roll card pops up (not on intro or words). The **pop-up rounded
-  photo card over a halftone ring** are liked — reuse them, recoloured white/yellow.
+- Reference 01's **pixel squares**: use them ONLY as a burst when a B-roll card pops up (not on intro or words). The **pop-up rounded photo card** is liked;
+  skip the halftone ring (its dots read as specks on clothing). Recolour everything white/yellow.
 - Audience is usually adults (older than teens): keep it classy and restrained.
 - Background music under speech must be soft; if the clip has music baked in, separate it
   (Demucs `--two-stems=vocals`) and pull it down ~9 dB. Use suitable, sparse SFX.
