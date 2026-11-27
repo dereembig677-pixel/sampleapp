@@ -28,7 +28,7 @@ for f in range(N):
     bg=fr*GRAD
     # B-roll
     pin=eio(lin(t,IN0,IN1));pout=eio(lin(t,OUT0,OUT1));k=pin*(1-pout)
-    if k>0.002:
+    if False and k>0.002:   # v4: Astara photo is a card in gfx.html now, not a full-screen background
         z=1.0+0.10*(1-eio(lin(t,IN0,OUT1)))                      # slow push-out while shown, push-through on exit
         Mi=np.float32([[z,0,540-z*(AX0+540)],[0,z,960-z*960]])
         img=cv2.warpAffine(A,Mi,(W,H),flags=cv2.INTER_LINEAR,borderMode=cv2.BORDER_REFLECT).astype(np.float32)/255

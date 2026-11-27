@@ -2,7 +2,7 @@
 import json, numpy as np
 FPS=30; tr=json.load(open('track.json')); N=len(tr)
 # (time, zoom, face target y on screen) — all transitions cubic ease-in-out
-K=[(0.00,1.04,900),(1.65,1.16,900),(2.25,1.03,930),(2.75,1.08,930),(3.35,1.20,620),(4.87,1.24,640)]   # push in / ease out to reveal Astara / slow push / punch-in under the card
+K=[(0.00,1.04,900),(1.50,1.14,880),(2.05,1.16,680),(2.75,1.18,690),(3.30,1.22,640),(4.87,1.26,650)]   # push in, then tilt down/zoom so his belly is free for the cards; all quint ease in-out
 eio=lambda p:16*p**5 if p<.5 else 1-(-2*p+2)**5/2
 def key(t,i):
     for a,b in zip(K,K[1:]):

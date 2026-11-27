@@ -52,8 +52,21 @@ function pixels(t,seed,cx,cy,spreadX,spreadY,t0,n=6,life=0.7){
     const cells=sz>=28?2:1,cs=sz/cells;for(let gx=0;gx<cells;gx++)for(let gy=0;gy<cells;gy++){if(lin(p,0,0.3)*4>gx+gy*cells-0.01||cells===1)ctx.fillRect(Math.round(x+gx*cs),Math.round(y+gy*cs),Math.ceil(cs),Math.ceil(cs))}
     ctx.restore()}}
 function rr(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
-function cardImg(){if(CARD.im)return Promise.resolve(CARD.im);   // company photo supplied by the user (company.jpg)
-  return new Promise(res=>{const im=new Image();im.onload=()=>{CARD.im=im;res(im)};im.src='company.jpg'})}
+const IMG={};
+function loadImg(src){if(IMG[src])return Promise.resolve(IMG[src]);return new Promise(res=>{const im=new Image();im.onload=()=>{IMG[src]=im;res(im)};im.src=src})}
+// square B-roll card in front of his belly: pops up (scale + blur + rise, eased in & out), thin white border,
+// hairline yellow frame drawn on around it, pixel-square burst at two corners; optional exit (shrink + blur)
+async function card(t,c,src,tin,tout,seed){
+  if(t<tin||t>tout)return null;const p=qio(lin(t,tin,tin+0.55)),q=tout<9?eio(lin(t,tout-0.35,tout)):0,k=p*(1-q);
+  const cx=safeX(c.fx,CS),CY0=Math.min(1380-CS-20,c.fy+330),cy=CY0+CS/2+(1-p)*60+q*30;const im=await loadImg(src);
+  ctx.save();ctx.globalAlpha=k;const bl=(1-p)*12+q*12;if(bl>0.3)ctx.filter=`blur(${bl.toFixed(1)}px)`;ctx.translate(cx,cy);const sc=mix(0.78,1,p)*mix(1,0.85,q);ctx.scale(sc,sc);
+  ctx.shadowColor='rgba(0,0,0,0.35)';ctx.shadowBlur=24;ctx.shadowOffsetY=8;rr(-CS/2,-CS/2,CS,CS,34);ctx.fillStyle='#111';ctx.fill();ctx.shadowColor='transparent';
+  ctx.save();rr(-CS/2,-CS/2,CS,CS,34);ctx.clip();const z=mix(1.14,1.0,eio(lin(t,tin,tin+1.6)));ctx.drawImage(im,-CS/2*z,-CS/2*z,CS*z,CS*z);ctx.restore();
+  rr(-CS/2,-CS/2,CS,CS,34);ctx.lineWidth=3;ctx.strokeStyle='rgba(255,255,255,0.95)';ctx.stroke();
+  {const d=qio(lin(t,tin+0.35,tin+0.95));if(d>0){const o=12;ctx.lineWidth=1.6;ctx.strokeStyle=YEL;ctx.globalAlpha=k*0.9;ctx.setLineDash([(CS+2*o)*4*d,(CS+2*o)*4]);rr(-CS/2-o,-CS/2-o,CS+2*o,CS+2*o,44);ctx.stroke();ctx.setLineDash([])}}
+  ctx.restore();
+  pixels(t,seed,cx+CS/2,CY0+30,60,50,tin+0.05,6,0.8);pixels(t,seed+20,cx-CS/2,CY0+CS-60,60,50,tin+0.12,6,0.8);   // pixels ONLY here (card burst)
+  return {cx,CY0}}
 // halftone dot ring behind the card (reference 01), yellow, slowly turning
 function halftone(t,cx,cy,R,k){if(k<=0)return;ctx.save();ctx.globalAlpha=k*0.55;ctx.fillStyle=YEL;const rot=t*0.15;
   for(let ring=0;ring<16;ring++){const r=R*0.55+ring*R*0.045,cnt=Math.floor(r/9);
@@ -65,33 +78,23 @@ function pill(txt,x,y,size,k,dy=0){if(k<=0)return;ctx.save();ctx.globalAlpha=k;c
   ctx.fillStyle=WHITE;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(txt,x,y+size*0.06);ctx.restore()}
 // word times (CTC aligned, words.json); text appears a couple of frames before the word
 const T={emrooz:0.18,oomadim:0.58,shahr:1.02,zibaye:1.32,astara:1.80,vase:2.50,eftetah:2.78,sherkat:3.22,vihan:3.70,beton:3.98,END:4.867};
-const CARD_IN=3.20, CS=360;   // card sits over his torso/belly (reference 01), brand line on his upper chest — never on his head
+const CARD_IN=3.20, CS=360, AST_IN=1.78, AST_OUT=2.95;   // cards sit over his belly (reference 01); text never on his head or on a card
 async function render(t,layer){
   ctx.clearRect(0,0,W,H);const c=cam(t);const ax=540+(c.fx-540)*0.6,hy=c.head;
   if(layer==='front'){
-    // intro: pixel squares gather where the first line lands
-    pixels(t,1,ax,hy-330,300,60,0.0,10,0.9);
-    // Beat A
-    const pa=words(t,[['امروز',T.emrooz],['اومدیم',T.oomadim]],ax,hy-300,88,'SQM',2.0);
-    const pb=words(t,[['شهر',T.shahr],['زیبای',T.zibaye,'yel']],ax,hy-140,160,'SQB',2.0);
-    pb.forEach(([x,w,t0],i)=>pixels(t,20+i*10,x,hy-200,w*0.6,70,t0,5,0.6));
-    // Beat B — Latin line with letter-spacing tracking (wide -> tight)
-    // Beat C — kicker line, leaves upward as the card pops in
-    words(t,[['واسه',T.vase],['افتتاح',T.eftetah],['شرکت',T.sherkat]],ax,hy-80,88,'SQM',T.vihan+0.35,{dout:0.35});  // stays until the brand lands
-    // company card: square, rounded, pops up (scale + blur + rise, eased in & out)
-    if(t>=CARD_IN){const p=qio(lin(t,CARD_IN,CARD_IN+0.55)),cx=safeX(c.fx,CS),CY0=Math.min(1380-CS-20,c.fy+330),cy=CY0+CS/2+(1-p)*60;  // tracked to his belly
-      const im=await cardImg();
-      ctx.save();ctx.globalAlpha=p;if(p<0.98)ctx.filter=`blur(${((1-p)*12).toFixed(1)}px)`;ctx.translate(cx,cy);ctx.scale(mix(0.78,1,p),mix(0.78,1,p));
-      ctx.shadowColor='rgba(0,0,0,0.35)';ctx.shadowBlur=24;ctx.shadowOffsetY=8;rr(-CS/2,-CS/2,CS,CS,34);ctx.fillStyle='#111';ctx.fill();ctx.shadowColor='transparent';
-      ctx.save();rr(-CS/2,-CS/2,CS,CS,34);ctx.clip();const z=mix(1.14,1.0,eio(lin(t,CARD_IN,T.END)));ctx.drawImage(im,-CS/2*z,-CS/2*z,CS*z,CS*z);ctx.restore();
-      rr(-CS/2,-CS/2,CS,CS,34);ctx.lineWidth=3;ctx.strokeStyle='rgba(255,255,255,0.95)';ctx.stroke();
-      {const q=qio(lin(t,CARD_IN+0.35,CARD_IN+0.95));if(q>0){const o=12;ctx.globalAlpha=p*0.9;ctx.lineWidth=1.6;ctx.strokeStyle=YEL;ctx.setLineDash([(CS+2*o)*4*q,(CS+2*o)*4]);rr(-CS/2-o,-CS/2-o,CS+2*o,CS+2*o,44);ctx.stroke();ctx.setLineDash([])}}
-      ctx.restore();
-      // pixel squares burst from two card corners
-      pixels(t,70,cx+CS/2,CY0+30,60,50,CARD_IN+0.05,6,0.8);pixels(t,90,cx-CS/2,CY0+CS-60,60,50,CARD_IN+0.12,6,0.8);
-      // brand on his upper chest, overlapping the card's top edge (reference 01 «CEO» layout)
-      const pv=words(t,[['ویهان',T.vihan,'yel'],['بتن',T.beton,'yel']],cx,CY0+34,140,'SQB',T.END+0.3,{gap:0.22});
-      pv.forEach(([x,w,t0],i)=>pixels(t,120+i*10,x,CY0-50,w*0.6,40,t0,4,0.6));}
+    // Beat A — above his head
+    words(t,[['امروز',T.emrooz],['اومدیم',T.oomadim]],ax,hy-300,88,'SQM',2.0);
+    words(t,[['شهر',T.shahr],['زیبای',T.zibaye,'yel']],ax,hy-140,160,'SQB',2.0);
+    // Beat B — Astara photo as a square card popping up in front of his belly («آستارا» itself is behind him, back layer)
+    await card(t,c,'astara.png',AST_IN,AST_OUT,40);
+    // Beat C — «واسه» to the right of his head, «افتتاح» to the left
+    {const y=c.fy+20,g=c.fw*1.05+30;ctx.save();ctx.font='92px SQM';const w1=ctx.measureText('واسه').width,w2=ctx.measureText('افتتاح').width;ctx.restore();
+     const xr=Math.min(SAFE.x1-w1/2,c.fx+g+w1/2),xl=Math.max(SAFE.x0+w2/2,c.fx-g-w2/2),end=T.vihan+0.35;
+     draw('واسه',xr,y,92,'SQM',WHITE,{r:env(t,T.vase,end,0.45,0.35)});draw('افتتاح',xl,y,92,'SQM',WHITE,{r:env(t,T.eftetah,end,0.45,0.35)})}
+    // company card + «شرکت ویهان بتن» on one line just ABOVE the card (no overlap)
+    const k=await card(t,c,'company.jpg',CARD_IN,99,70);
+    {const CY0=Math.min(1380-CS-20,c.fy+330),cx=safeX(c.fx,CS);
+     words(t,[['شرکت',T.sherkat],['ویهان',T.vihan,'yel'],['بتن',T.beton,'yel']],cx,CY0-52,124,'SQB',T.END+0.3,{gap:0.22});}
   } else {
     // «آستارا» huge, BEHIND the speaker (his matte covers part of it)
     {const r=env(t,T.astara-0.04,2.95,0.55,0.32,0);

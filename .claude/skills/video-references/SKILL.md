@@ -25,7 +25,7 @@ Watch the relevant one (contact sheet + a few full-res frames) before designing 
 - Fairly large text is preferred (kicker ~88 px, keyword 160–340 px at 1080 wide), inside the safe zone.
 - Morabba ("فونت مربع", the square font: ExtraBold for keywords, Bold for kickers) is the user's go-to
   Persian display font. Licensed: never commit it.
-- Reference 01's **pixel squares** (blinking blocks around arriving words) and its **pop-up rounded
+- Reference 01's **pixel squares**: use them ONLY as a burst when a B-roll card pops up (not on intro or words). The **pop-up rounded
   photo card over a halftone ring** are liked — reuse them, recoloured white/yellow.
 - Audience is usually adults (older than teens): keep it classy and restrained.
 - Background music under speech must be soft; if the clip has music baked in, separate it
@@ -65,3 +65,12 @@ Persian talking head on a dark red-curtain set — **the user's preferred motion
 - Title moments: heavy Persian bold text revealed word by word with blur, layered over photo-cutout
   collages; collage photos fly in with blur/glow and settle with a slow float.
 - Overall: clean, restrained, every effect serves the story.
+
+## Layout lessons (Astara hook, user feedback)
+- Never put text or cards on the speaker's head. B-roll = **square card with a minimal stroke popping up in
+  front of the speaker's belly** (tracked), even for location B-roll; the place name sits **behind** the
+  speaker (matte), not in front.
+- Text that belongs to a card goes **just above** the card, never overlapping it.
+- Short connector words can flank the head (first word right of the head, second word left — RTL order).
+- Keep each line centred on the speaker while its words arrive; no word should land far from him.
+- Watch the whole render (10 fps contact sheet + full-res frames) before delivering.
