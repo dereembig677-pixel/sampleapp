@@ -1,3 +1,4 @@
-B-roll (Mixkit free licence): boxing 40970, car 35577, fire 52312 — https://mixkit.co
-SFX: ghost-editor library + Mixkit (car_start 1566, speed_swoosh 1558, fire_swoosh 1736, fire_crackle 2653, strong_punch 2151, body_punches 2047)
+B-roll (Mixkit free licence, https://mixkit.co): tool drawer 47082, SUV wheel off-road 47835, flames 52312
+SFX: ghost-editor library + Mixkit (car_start 1566, speed_swoosh 1558, fire_swoosh 1736, fire_crackle 2653)
 Music: Mixkit 'Infinity' (ghost-editor library)
+Subtitle timing: CTC forced alignment with jonatasgrosman/wav2vec2-large-xlsr-53-persian (align.py)

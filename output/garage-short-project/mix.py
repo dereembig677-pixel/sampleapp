@@ -1,21 +1,14 @@
 import subprocess, sys
 L='/root/.claude/skills/ghost-editor/library/sfx/'; X='../sfx/'; V=sys.argv[1]; MUS='/root/.claude/skills/ghost-editor/library/music/infinity.mp3'
 # (time, file, gain dB, trim start, duration)
-S=[(0.08,L+'tech-digital-whoosh.wav',-17,0,1.2),
- (3.40,L+'impact-2.wav',-13,0,1.0),(3.42,L+'cc0-glass-break.wav',-22,0,0.8),
- (14.94,L+'cc0-error-beep.wav',-18,0,0.8),
- (18.12,L+'whoosh-2.wav',-13,0,0.9),(18.75,X+'strong_punch.mp3',-11,0,0.52),(19.55,X+'strong_punch.mp3',-12,0,0.52),(20.35,X+'body_punches.mp3',-14,0,1.38),
- (21.28,L+'cc0-vinyl-scratch.wav',-15,0,0.7),(22.45,L+'pop-1.wav',-17,0,0.3),(22.70,L+'pop-2.wav',-15,0,0.2),
- (29.10,X+'speed_swoosh.mp3',-12,0,1.2),(29.45,X+'car_start.mp3',-17,0,2.0),(31.30,L+'whoosh-1.wav',-17,0,0.9),
- (35.13,L+'whoosh-cine.wav',-14,0,0.4),
- (39.45,L+'tick-1.wav',-19,0,0.3),(41.04,L+'cc0-vinyl-scratch.wav',-13,0,0.7),
- (43.00,L+'riser-1.wav',-23,0,1.7),(45.60,L+'riser-1.wav',-21,0,1.7),(48.20,L+'tech-ui-error.wav',-18,0,0.8),
- (53.58,L+'impact-1.wav',-13,0,1.2),(55.05,L+'impact-1.wav',-12,0,1.2),(55.72,L+'cinematic-cine-hit.wav',-12,0,1.6),
- (60.80,L+'reaction-ding-ding.wav',-15,0,1.2),
- (61.25,X+'fire_swoosh.mp3',-13,0,1.6),(61.30,X+'fire_crackle.mp3',-18,0.2,2.6),
- (67.50,L+'whoosh-reverse.wav' if False else L+'cc0-whoosh-reverse.wav',-22,0,1.0),
- (72.30,L+'whoosh-1.wav',-17,0,0.9),(72.94,L+'click-1.wav',-10,0,0.3),(73.02,L+'ding-1.wav',-16,0,1.0),
- (74.68,L+'click-1.wav',-10,0,0.3),(74.74,L+'pop-3.wav',-13,0,0.4),(80.50,L+'whoosh-2.wav',-15,0,0.9)]
+S=[(0.12,L+'tech-digital-whoosh.wav',-20,0,1.2),
+ (17.98,L+'whoosh-2.wav',-15,0,0.9),(20.20,L+'pop-1.wav',-19,0,0.3),(21.56,L+'whoosh-1.wav',-18,0,0.9),
+ (29.18,X+'speed_swoosh.mp3',-13,0,1.2),(29.50,X+'car_start.mp3',-20,0,1.8),(31.28,L+'whoosh-1.wav',-17,0,0.9),
+ (35.70,L+'whoosh-cine.wav',-18,0,0.4),(41.12,L+'impact-2.wav',-19,0,0.8),
+ (53.76,L+'impact-1.wav',-15,0,1.2),(55.28,L+'impact-1.wav',-15,0,1.2),(56.11,L+'cinematic-cine-hit.wav',-13,0,1.6),
+ (61.18,X+'fire_swoosh.mp3',-14,0,1.6),(61.25,X+'fire_crackle.mp3',-19,0.2,2.7),
+ (72.30,L+'whoosh-1.wav',-18,0,0.9),(72.85,L+'click-1.wav',-11,0,0.3),(72.98,L+'ding-1.wav',-17,0,1.0),
+ (74.58,L+'click-1.wav',-11,0,0.3),(74.64,L+'pop-3.wav',-15,0,0.4),(80.42,L+'whoosh-2.wav',-17,0,0.9)]
 D=81.32
 args=['ffmpeg','-v','error','-y','-i',V,'-ss','4','-i',MUS]
 fc=[]; mix=[]
