@@ -5,6 +5,10 @@ description: The user's saved reference videos for short-form editing style (ver
 
 # Video style references
 
+**Standing rule:** every new reference video the user gives must be saved here (see `CLAUDE.md` at the
+repo root for the steps: numbered copy + contact sheet in `references/`, a breakdown section below, new
+preferences added, commit and push).
+
 Reference videos live in `references/` (each with a `.sheet.jpg` contact sheet, 2 frames/s).
 Watch the relevant one (contact sheet + a few full-res frames) before designing an edit.
 **Take inspiration, don't copy** — the user explicitly asked for this.
