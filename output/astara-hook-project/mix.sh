@@ -1,0 +1,3 @@
+# speech + two soft whooshes on the B-roll in/out, -14 LUFS, true peak -1 dB
+ffmpeg -v error -y -i /root/.claude/uploads/8561a905-376c-5c4d-8be5-0c380c50e12a/93c37f34-1_1.mp4 -i /root/.claude/skills/ghost-editor/library/sfx/whoosh-2.wav -i /root/.claude/skills/ghost-editor/library/sfx/cc0-whoosh-reverse.wav -filter_complex \
+"[0:a]highpass=f=70,acompressor=threshold=-18dB:ratio=2.5:attack=8:release=120[v];[1:a]adelay=1500|1500,volume=0.28[w1];[2:a]adelay=2450|2450,volume=0.18[w2];[v][w1][w2]amix=inputs=3:normalize=0:duration=first,loudnorm=I=-14:TP=-1.5:LRA=7,aresample=48000" -c:a pcm_s16le w/mix.wav

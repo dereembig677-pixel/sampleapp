@@ -1,0 +1,67 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+/* Morabba (the user's square font) is used when Morabba-*.ttf sit next to this file; Vazirmatn is only a stand-in */
+@font-face{font-family:SQB;src:url(Morabba-Black.ttf),url(Morabba-Bold.ttf),url(Morabba.ttf),url(Vazirmatn-Black.ttf)}
+@font-face{font-family:SQL;src:url(Morabba-Light.ttf),url(Morabba-UltraLight.ttf),url(Vazirmatn-Light.ttf)}
+html,body{margin:0;background:transparent}
+</style></head><body>
+<canvas id="c" width="1080" height="1920"></canvas>
+<script>
+// Design: white text by default, second colour = red of the red carpet (video palette). Every move is ease-in-out, no bounce.
+const W=1080,H=1920,cv=document.getElementById('c'),ctx=cv.getContext('2d');
+const WHITE='#FFFFFF',ACC='#F2465E';
+let CAM=[];
+window.ready=Promise.all([document.fonts.load('80px SQB','آستارا'),document.fonts.load('80px SQL','آستارا'),
+  fetch('cam.json').then(r=>r.json()).then(j=>CAM=j)]);
+const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x)),lin=(t,a,b)=>clamp((t-a)/(b-a));
+const eio=p=>p<.5?4*p*p*p:1-Math.pow(-2*p+2,3)/2;          // cubic in-out
+const qio=p=>p<.5?16*p**5:1-Math.pow(-2*p+2,5)/2;            // quint in-out (softer start/stop)
+const mix=(a,b,p)=>a+(b-a)*p;
+function cam(t){const f=Math.min(CAM.length-1,Math.max(0,t*30));const i=Math.floor(f),j=Math.min(CAM.length-1,i+1),p=f-i;
+  const o={};for(const k in CAM[i])o[k]=mix(CAM[i][k],CAM[j][k],p);return o}
+// in/out envelope: soft blur-to-sharp, small rise, slight scale; all ease in-out
+function env(t,a,b,din=0.45,dout=0.30,rise=26){
+  if(t<a||t>b)return null;const pi=qio(lin(t,a,a+din)),po=eio(lin(t,b-dout,b));
+  return {k:pi*(1-po),blur:(1-pi)*16+po*14,dy:(1-pi)*rise-po*rise*0.7,s:mix(0.94,1,pi)*mix(1,1.03,po)}}
+function draw(txt,x,y,size,font,fill,{align='center',r,ls=0,shadow=0.5}={}){
+  if(!r||r.k<0.003)return;ctx.save();ctx.globalAlpha=r.k;if(r.blur>0.3)ctx.filter=`blur(${r.blur.toFixed(1)}px)`;
+  ctx.translate(x,y+r.dy);ctx.scale(r.s,r.s);ctx.font=`${size}px ${font}`;ctx.textAlign=align;ctx.textBaseline='alphabetic';
+  if(ls){ctx.letterSpacing=ls.toFixed(1)+'px'}else ctx.direction='rtl';
+  ctx.shadowColor=`rgba(0,0,0,${shadow})`;ctx.shadowBlur=size*0.30;ctx.shadowOffsetY=size*0.06;ctx.fillStyle=fill;ctx.fillText(txt,0,0);ctx.restore()}
+// a line of RTL words, each revealed on its own (spoken) time
+function words(t,list,cx,y,size,font,end,{gap=0.26}={}){
+  ctx.save();ctx.font=`${size}px ${font}`;ctx.direction='rtl';const sp=size*gap;
+  const ws=list.map(w=>ctx.measureText(w[0]).width);const tw=ws.reduce((a,b)=>a+b,0)+sp*(ws.length-1);ctx.restore();
+  let xr=cx+tw/2;list.forEach(([w,t0,col],i)=>{draw(w,xr-ws[i]/2,y,size,font,col||WHITE,{r:env(t,t0,end),shadow:col?0.8:0.55});xr-=ws[i]+sp})}
+// word times from CTC alignment (words.json); text appears ~2 frames before it is spoken
+const T={emrooz:0.25,oomadim:0.60,shahr:1.04,zibaye:1.42,astara:1.80,vase:2.50,eftetah:2.78,sherkat:3.20,vihan:3.70,beton:3.98,END:4.867};
+function render(t,layer){
+  ctx.clearRect(0,0,W,H);const c=cam(t);
+  const ax=540+(c.fx-540)*0.6;           // text tracks the speaker (60 % of his sway, so it stays calm)
+  const hy=c.head;                        // top of his head on screen
+  if(layer==='front'){
+    const scrim=(k,y,rx,ry)=>{if(k<=0)return;ctx.save();ctx.globalAlpha=k;ctx.translate(ax,y);ctx.scale(rx/100,ry/100);
+      const g=ctx.createRadialGradient(0,0,0,0,0,100);g.addColorStop(0,'rgba(0,0,0,0.42)');g.addColorStop(0.55,'rgba(0,0,0,0.22)');g.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle=g;ctx.fillRect(-100,-100,200,200);ctx.restore()};
+    scrim(qio(lin(t,0.15,0.6))*(1-eio(lin(t,1.55,1.9))),hy-230,520,230);
+    scrim(qio(lin(t,2.45,2.9))*(1-eio(lin(t,T.END,T.END+0.3))),hy-230,560,250);
+    // Beat A — «امروز اومدیم / شهر زیبای»
+    words(t,[['امروز',T.emrooz],['اومدیم',T.oomadim]],ax,hy-300,70,'SQL',1.86);
+    words(t,[['شهر',T.shahr],['زیبای',T.zibaye]],ax,hy-150,128,'SQB',1.86);
+    // Beat B — Latin kicker with letter-spacing tracking (wide -> tight)
+    {const r=env(t,T.astara+0.10,2.92,0.6,0.3,14);if(r){const p=qio(lin(t,T.astara+0.10,2.6));
+      draw('ASTARA  ·  GILAN',ax,hy-215,44,'SQB',ACC,{r,ls:mix(34,12,p),shadow:0.85})}}
+    // Beat C — «واسه افتتاح شرکت» / «ویهان بتن»
+    words(t,[['واسه',T.vase],['افتتاح',T.eftetah],['شرکت',T.sherkat]],ax,hy-310,72,'SQL',T.END+0.30);
+    words(t,[['ویهان',T.vihan,ACC],['بتن',T.beton,ACC]],ax,hy-150,170,'SQB',T.END+0.30,{gap:0.22});
+    // underline that draws out from the centre (ease in-out) under the brand name
+    {const p=qio(lin(t,T.beton+0.05,T.beton+0.65));if(p>0){ctx.save();const w=360*p;ctx.globalAlpha=0.95;ctx.fillStyle=WHITE;
+      ctx.shadowColor='rgba(0,0,0,0.4)';ctx.shadowBlur=10;ctx.fillRect(ax-w/2,hy-112,w,7);ctx.restore()}}
+  } else {
+    // Beat B — «آستارا» huge, BEHIND the speaker (his matte covers it)
+    const r=env(t,T.astara-0.04,2.95,0.55,0.32,0);
+    if(r){r.s*=mix(1.12,1.0,qio(lin(t,T.astara-0.04,T.astara+0.9)));draw('آستارا',ax,hy+190,300,'SQB',WHITE,{r,shadow:0.35})}
+  }
+}
+</script></body></html>

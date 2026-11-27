@@ -1,0 +1,2 @@
+Square font: put the user's Morabba files (Morabba-Black.ttf / Morabba-Bold.ttf / Morabba.ttf for bold, Morabba-Light.ttf / Morabba-UltraLight.ttf for light)
+next to gfx.html, then re-render. Morabba is licensed: never commit it. Vazirmatn (OFL) is only a stand-in when Morabba is missing.
