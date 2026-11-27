@@ -1,3 +1,13 @@
-# speech + two soft whooshes on the B-roll in/out, -14 LUFS, true peak -1 dB
-ffmpeg -v error -y -i /root/.claude/uploads/8561a905-376c-5c4d-8be5-0c380c50e12a/93c37f34-1_1.mp4 -i /root/.claude/skills/ghost-editor/library/sfx/whoosh-2.wav -i /root/.claude/skills/ghost-editor/library/sfx/cc0-whoosh-reverse.wav -filter_complex \
-"[0:a]highpass=f=70,acompressor=threshold=-18dB:ratio=2.5:attack=8:release=120[v];[1:a]adelay=1500|1500,volume=0.28[w1];[2:a]adelay=2450|2450,volume=0.18[w2];[v][w1][w2]amix=inputs=3:normalize=0:duration=first,loudnorm=I=-14:TP=-1.5:LRA=7,aresample=48000" -c:a pcm_s16le w/mix.wav
+# Voice (Demucs stem) on top, the clip's music pulled down ~9 dB, restrained SFX on real moments; -14 LUFS, TP -1.5 dB
+# needs: python3 -m demucs --two-stems=vocals -n htdemucs -o w/sep w/full.wav
+V=w/sep/htdemucs/full/vocals.wav; M=w/sep/htdemucs/full/no_vocals.wav; S=/root/.claude/skills/ghost-editor/library/sfx
+ffmpeg -v error -y -i $V -i $M -i $S/tech-digital-whoosh.wav -i $S/whoosh-2.wav -i $S/cc0-whoosh-reverse.wav -i $S/send-swoosh.wav -i $S/pop-1.wav -i $S/cinematic-cine-hit.wav -filter_complex \
+"[0:a]highpass=f=70,acompressor=threshold=-18dB:ratio=2.5:attack=8:release=120[v];\
+[1:a]volume=-9dB,lowpass=f=9000[m];\
+[2:a]volume=-24dB[s0];\
+[3:a]adelay=1500|1500,volume=-15dB[s1];\
+[4:a]adelay=2420|2420,volume=-19dB[s2];\
+[5:a]adelay=3080|3080,volume=-18dB[s3];\
+[6:a]adelay=3260|3260,volume=-16dB[s4];\
+[7:a]adelay=3680|3680,volume=-22dB,afade=t=out:st=4.4:d=0.45[s5];\
+[v][m][s0][s1][s2][s3][s4][s5]amix=inputs=8:normalize=0:duration=first,loudnorm=I=-14:TP=-1.5:LRA=7,aresample=48000" -c:a pcm_s16le w/mix.wav

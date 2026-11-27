@@ -6,7 +6,7 @@ eio=lambda p:4*p**3 if p<.5 else 1-(-2*p+2)**3/2
 # Astara photo: cover 1920 high, crop window chosen so the tower and the sign sit around the speaker
 A=cv2.imread('astara.png'); sc=H/A.shape[0]; A=cv2.resize(A,None,fx=sc,fy=sc,interpolation=cv2.INTER_LANCZOS4)
 AX0=int(470*sc)
-yy=np.linspace(0,1,H)[:,None,None]; GRAD=1-0.50*np.clip(1-yy/0.62,0,1)**1.3     # darken the top (text area) of the background only
+yy=np.linspace(0,1,H)[:,None,None]; GRAD=1-0.16*np.clip(1-yy/0.45,0,1)**1.5     # darken the top (text area) of the background only
 IN0,IN1,OUT0,OUT1=1.70,2.30,2.62,3.02                                                  # B-roll reveal / exit
 def rgba(p):
     if not os.path.exists(p):return None

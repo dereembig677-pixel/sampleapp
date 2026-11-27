@@ -15,8 +15,23 @@ Watch the relevant one (contact sheet + a few full-res frames) before designing 
 
 ## The user's standing preferences (learned from feedback)
 - **Text colours: white and yellow only** (yellow `#FFD60A`). No neon, no red/green/cyan text.
+  Even when asked for a "second colour from the video palette", never use red for text (Astara hook
+  feedback) — take the yellow/gold, or another non-red palette colour.
 - **Respect the YouTube Shorts safe zone** (1080×1920): keep all text inside x 60–900, y 250–1420
   (clear of the header, right-hand action buttons, and the title/description area at the bottom).
+  For Instagram Reels keep text inside x 70–910, y 260–1380.
+- **Text shadows must be tight** (small blur, low offset). No big dark scrims/vignettes behind text
+  that darken the whole frame as text enters.
+- Fairly large text is preferred (kicker ~88 px, keyword 160–340 px at 1080 wide), inside the safe zone.
+- Morabba ("فونت مربع", the square font: ExtraBold for keywords, Bold for kickers) is the user's go-to
+  Persian display font. Licensed: never commit it.
+- Reference 01's **pixel squares** (blinking blocks around arriving words) and its **pop-up rounded
+  photo card over a halftone ring** are liked — reuse them, recoloured white/yellow.
+- Audience is usually adults (older than teens): keep it classy and restrained.
+- Background music under speech must be soft; if the clip has music baked in, separate it
+  (Demucs `--two-stems=vocals`) and pull it down ~9 dB. Use suitable, sparse SFX.
+- B-roll may come from Mixkit; Pinterest images are not used (rights + blocked). If a custom image is
+  needed, give the user a ready prompt and they generate it themselves in Google Flow.
 - **Motion must look professional, not template-like**: blur-to-sharp reveals, expo ease-out,
   directional motion blur on moving elements. No springy/bouncy overshoot, no camera shake,
   no gimmick widgets (crack lines, X stamps, padlocks, power meters, thermometers, badges).

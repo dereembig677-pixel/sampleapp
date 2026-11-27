@@ -5,6 +5,6 @@ const {chromium}=require('playwright');const fs=require('fs');const path=require
   const b=await chromium.launch({args:['--allow-file-access-from-files']});const p=await b.newPage({viewport:{width:1080,height:1920}});
   p.on('pageerror',e=>console.log('ERR',e.message));await p.goto('file://'+path.resolve(__dirname,'gfx.html'));await p.evaluate(()=>window.ready);
   const frames=(list||[...Array(n).keys()]).filter((f,i)=>i%wc===wi);
-  for(const f of frames){const d=await p.evaluate(([t,l])=>{render(t,l);return document.getElementById('c').toDataURL('image/png')},[f/fps,process.env.LAYER||'front']);
+  for(const f of frames){const d=await p.evaluate(async([t,l])=>{await render(t,l);return document.getElementById('c').toDataURL('image/png')},[f/fps,process.env.LAYER||'front']);
     fs.writeFileSync(`${out}/${String(f).padStart(5,'0')}.png`,Buffer.from(d.split(',')[1],'base64'))}
   await b.close()})();

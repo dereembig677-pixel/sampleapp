@@ -2,7 +2,7 @@
 import json, numpy as np
 FPS=30; tr=json.load(open('track.json')); N=len(tr)
 # (time, zoom, face target y on screen) — all transitions cubic ease-in-out
-K=[(0.00,1.12,900),(1.70,1.20,900),(2.05,1.10,930),(2.80,1.12,930),(3.30,1.26,900),(3.75,1.36,880),(4.87,1.42,880)]
+K=[(0.00,1.12,900),(1.70,1.20,900),(2.05,1.10,930),(2.80,1.12,930),(3.35,1.16,1060),(3.85,1.22,1090),(4.87,1.27,1090)]
 eio=lambda p:4*p**3 if p<.5 else 1-(-2*p+2)**3/2
 def key(t,i):
     for a,b in zip(K,K[1:]):

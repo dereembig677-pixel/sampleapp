@@ -1,67 +1,102 @@
 <!doctype html>
 <html><head><meta charset="utf-8">
 <style>
-/* Morabba (the user's square font) is used when Morabba-*.ttf sit next to this file; Vazirmatn is only a stand-in */
-@font-face{font-family:SQB;src:url(Morabba-Black.ttf),url(Morabba-Bold.ttf),url(Morabba.ttf),url(Vazirmatn-Black.ttf)}
-@font-face{font-family:SQL;src:url(Morabba-Light.ttf),url(Morabba-UltraLight.ttf),url(Vazirmatn-Light.ttf)}
+/* Morabba = the user's square font (licensed, never committed). Vazirmatn only if Morabba is missing. */
+@font-face{font-family:SQB;src:url(Morabba-ExtraBold.ttf),url(Vazirmatn-Black.ttf)}
+@font-face{font-family:SQM;src:url(Morabba-Bold.ttf),url(Vazirmatn-Light.ttf)}
 html,body{margin:0;background:transparent}
 </style></head><body>
 <canvas id="c" width="1080" height="1920"></canvas>
 <script>
-// Design: white text by default, second colour = red of the red carpet (video palette). Every move is ease-in-out, no bounce.
+// Style (from reference 01, recoloured): pixel squares, small kicker + big keyword with gradient fill,
+// rounded photo card that pops up over a halftone ring. Colours: white + yellow (gold of the carpet trim). No red text.
+// Instagram Reels safe zone: text inside x 70..910, y 260..1380. Every move eases in & out; no bounce; tight shadows only.
 const W=1080,H=1920,cv=document.getElementById('c'),ctx=cv.getContext('2d');
-const WHITE='#FFFFFF',ACC='#F2465E';
-let CAM=[];
-window.ready=Promise.all([document.fonts.load('80px SQB','آستارا'),document.fonts.load('80px SQL','آستارا'),
+const WHITE='#FFFFFF',YEL='#FFD60A',SAFE={x0:70,x1:910};
+let CAM=[];const CARD={};
+window.ready=Promise.all([document.fonts.load('80px SQB','آستارا'),document.fonts.load('80px SQM','آستارا'),
   fetch('cam.json').then(r=>r.json()).then(j=>CAM=j)]);
-const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x)),lin=(t,a,b)=>clamp((t-a)/(b-a));
-const eio=p=>p<.5?4*p*p*p:1-Math.pow(-2*p+2,3)/2;          // cubic in-out
-const qio=p=>p<.5?16*p**5:1-Math.pow(-2*p+2,5)/2;            // quint in-out (softer start/stop)
-const mix=(a,b,p)=>a+(b-a)*p;
-function cam(t){const f=Math.min(CAM.length-1,Math.max(0,t*30));const i=Math.floor(f),j=Math.min(CAM.length-1,i+1),p=f-i;
-  const o={};for(const k in CAM[i])o[k]=mix(CAM[i][k],CAM[j][k],p);return o}
-// in/out envelope: soft blur-to-sharp, small rise, slight scale; all ease in-out
-function env(t,a,b,din=0.45,dout=0.30,rise=26){
+const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x)),lin=(t,a,b)=>clamp((t-a)/(b-a)),mix=(a,b,p)=>a+(b-a)*p;
+const eio=p=>p<.5?4*p*p*p:1-Math.pow(-2*p+2,3)/2, qio=p=>p<.5?16*p**5:1-Math.pow(-2*p+2,5)/2;
+function cam(t){const f=clamp(t*30,0,CAM.length-1),i=Math.floor(f),j=Math.min(CAM.length-1,i+1),p=f-i;const o={};for(const k in CAM[i])o[k]=mix(CAM[i][k],CAM[j][k],p);return o}
+function rnd(n){const x=Math.sin(n*127.1+311.7)*43758.5453;return x-Math.floor(x)}
+function env(t,a,b,din=0.45,dout=0.30,rise=30){
   if(t<a||t>b)return null;const pi=qio(lin(t,a,a+din)),po=eio(lin(t,b-dout,b));
-  return {k:pi*(1-po),blur:(1-pi)*16+po*14,dy:(1-pi)*rise-po*rise*0.7,s:mix(0.94,1,pi)*mix(1,1.03,po)}}
-function draw(txt,x,y,size,font,fill,{align='center',r,ls=0,shadow=0.5}={}){
+  return {k:pi*(1-po),blur:(1-pi)*14+po*12,dy:(1-pi)*rise-po*rise*0.7,s:mix(0.93,1,pi)*mix(1,1.03,po)}}
+function fill(kind,size){ if(kind==='yel'){const g=ctx.createLinearGradient(0,-size*0.8,0,size*0.15);g.addColorStop(0,'#FFE979');g.addColorStop(1,'#FFC300');return g}
+  if(kind==='white'){const g=ctx.createLinearGradient(0,-size*0.8,0,size*0.15);g.addColorStop(0,'#FFFFFF');g.addColorStop(1,'#E9ECEF');return g} return kind}
+function draw(txt,x,y,size,font,col,{r,ls=0}={}){
   if(!r||r.k<0.003)return;ctx.save();ctx.globalAlpha=r.k;if(r.blur>0.3)ctx.filter=`blur(${r.blur.toFixed(1)}px)`;
-  ctx.translate(x,y+r.dy);ctx.scale(r.s,r.s);ctx.font=`${size}px ${font}`;ctx.textAlign=align;ctx.textBaseline='alphabetic';
-  if(ls){ctx.letterSpacing=ls.toFixed(1)+'px'}else ctx.direction='rtl';
-  ctx.shadowColor=`rgba(0,0,0,${shadow})`;ctx.shadowBlur=size*0.30;ctx.shadowOffsetY=size*0.06;ctx.fillStyle=fill;ctx.fillText(txt,0,0);ctx.restore()}
-// a line of RTL words, each revealed on its own (spoken) time
-function words(t,list,cx,y,size,font,end,{gap=0.26}={}){
-  ctx.save();ctx.font=`${size}px ${font}`;ctx.direction='rtl';const sp=size*gap;
-  const ws=list.map(w=>ctx.measureText(w[0]).width);const tw=ws.reduce((a,b)=>a+b,0)+sp*(ws.length-1);ctx.restore();
-  let xr=cx+tw/2;list.forEach(([w,t0,col],i)=>{draw(w,xr-ws[i]/2,y,size,font,col||WHITE,{r:env(t,t0,end),shadow:col?0.8:0.55});xr-=ws[i]+sp})}
-// word times from CTC alignment (words.json); text appears ~2 frames before it is spoken
-const T={emrooz:0.20,oomadim:0.60,shahr:1.04,zibaye:1.34,astara:1.80,vase:2.50,eftetah:2.78,sherkat:3.20,vihan:3.70,beton:3.98,END:4.867};
-function render(t,layer){
-  ctx.clearRect(0,0,W,H);const c=cam(t);
-  const ax=540+(c.fx-540)*0.6;           // text tracks the speaker (60 % of his sway, so it stays calm)
-  const hy=c.head;                        // top of his head on screen
+  ctx.translate(x,y+r.dy);ctx.scale(r.s,r.s);ctx.font=`${size}px ${font}`;ctx.textAlign='center';
+  if(ls)ctx.letterSpacing=ls.toFixed(1)+'px';else ctx.direction='rtl';
+  ctx.shadowColor='rgba(0,0,0,0.42)';ctx.shadowBlur=Math.min(10,size*0.07);ctx.shadowOffsetY=Math.max(2,size*0.025);  // tight shadow, never a big dark cloud
+  ctx.fillStyle=fill(col,size);ctx.fillText(txt,0,0);ctx.restore()}
+function measure(list,size,font,gap){ctx.save();ctx.font=`${size}px ${font}`;ctx.direction='rtl';const ws=list.map(w=>ctx.measureText(w[0]).width);ctx.restore();
+  return {ws,tw:ws.reduce((a,b)=>a+b,0)+size*gap*(ws.length-1)}}
+const safeX=(cx,tw)=>clamp(cx,SAFE.x0+tw/2,SAFE.x1-tw/2);
+// a line of RTL words, each revealed on its own spoken time; returns word centres (for pixel squares)
+function words(t,list,cx,y,size,font,end,{gap=0.24,dout=0.30}={}){
+  const {ws,tw}=measure(list,size,font,gap);cx=safeX(cx,tw);let xr=cx+tw/2;const pos=[];
+  list.forEach(([w,t0,col],i)=>{const c=xr-ws[i]/2;draw(w,c,y,size,font,col||WHITE,{r:env(t,t0,end,0.45,dout)});pos.push([c,ws[i],t0]);xr-=ws[i]+size*gap});return pos}
+// pixel squares (reference motif): small white/yellow blocks blink on around a word as it arrives, drift, then dissolve
+function pixels(t,seed,cx,cy,spreadX,spreadY,t0,n=6,life=0.7){
+  for(let i=0;i<n;i++){const a=t0+rnd(seed+i)*0.22-0.08,b=a+life*(0.6+0.5*rnd(seed+i+50));if(t<a||t>b)continue;
+    const p=lin(t,a,b),k=eio(lin(p,0,0.25))*(1-eio(lin(p,0.55,1)));
+    const sz=[14,20,28,40][Math.floor(rnd(seed+i+9)*4)],dx=(rnd(seed+i+3)-0.5)*2*spreadX,dy=(rnd(seed+i+7)-0.5)*2*spreadY;
+    const x=cx+dx+(rnd(seed+i+11)-0.5)*60*eio(p),y=cy+dy-40*eio(p);
+    ctx.save();ctx.globalAlpha=k*(rnd(seed+i+13)>0.5?0.95:0.55);ctx.fillStyle=rnd(seed+i+17)>0.55?YEL:WHITE;
+    // pixelated build: big block = 2x2 grid of cells that switch on one by one
+    const cells=sz>=28?2:1,cs=sz/cells;for(let gx=0;gx<cells;gx++)for(let gy=0;gy<cells;gy++){if(lin(p,0,0.3)*4>gx+gy*cells-0.01||cells===1)ctx.fillRect(Math.round(x+gx*cs),Math.round(y+gy*cs),Math.ceil(cs),Math.ceil(cs))}
+    ctx.restore()}}
+function rr(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
+function cardImg(n){n=clamp(n,1,54);if(CARD[n])return Promise.resolve(CARD[n]);
+  return new Promise(res=>{const im=new Image();im.onload=()=>{CARD[n]=im;res(im)};im.src=`w/card/${String(n).padStart(5,'0')}.jpg`})}
+// halftone dot ring behind the card (reference 01), yellow, slowly turning
+function halftone(t,cx,cy,R,k){if(k<=0)return;ctx.save();ctx.globalAlpha=k*0.55;ctx.fillStyle=YEL;const rot=t*0.15;
+  for(let ring=0;ring<16;ring++){const r=R*0.55+ring*R*0.045,cnt=Math.floor(r/9);
+    for(let j=0;j<cnt;j++){const a=j/cnt*Math.PI*2+rot+(ring%2)*0.5/cnt*Math.PI*2;const fade=Math.sin(Math.PI*ring/16);
+      const d=2.6*fade*(0.6+0.4*Math.sin(a*3+t));if(d<0.4)continue;ctx.beginPath();ctx.arc(cx+Math.cos(a)*r,cy+Math.sin(a)*r,d,0,7);ctx.fill()}}ctx.restore()}
+function pill(txt,x,y,size,k,dy=0){if(k<=0)return;ctx.save();ctx.globalAlpha=k;ctx.font=`${size}px SQM`;ctx.direction='rtl';const w=ctx.measureText(txt).width,h=size*1.55,bw=w+size*1.1;
+  ctx.translate(0,dy);rr(x-bw/2,y-h/2,bw,h,h/2);ctx.fillStyle='rgba(16,16,18,0.78)';ctx.shadowColor='rgba(0,0,0,0.3)';ctx.shadowBlur=10;ctx.shadowOffsetY=3;ctx.fill();
+  ctx.shadowColor='transparent';ctx.lineWidth=2;ctx.strokeStyle='rgba(255,214,10,0.85)';ctx.stroke();
+  ctx.fillStyle=WHITE;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(txt,x,y+size*0.06);ctx.restore()}
+// word times (CTC aligned, words.json); text appears a couple of frames before the word
+const T={emrooz:0.18,oomadim:0.58,shahr:1.02,zibaye:1.32,astara:1.80,vase:2.50,eftetah:2.78,sherkat:3.22,vihan:3.70,beton:3.98,END:4.867};
+const CARD_IN=3.20, CY0=262, CS=420;
+async function render(t,layer){
+  ctx.clearRect(0,0,W,H);const c=cam(t);const ax=540+(c.fx-540)*0.6,hy=c.head;
   if(layer==='front'){
-    const scrim=(k,y,rx,ry)=>{if(k<=0)return;ctx.save();ctx.globalAlpha=k;ctx.translate(ax,y);ctx.scale(rx/100,ry/100);
-      const g=ctx.createRadialGradient(0,0,0,0,0,100);g.addColorStop(0,'rgba(0,0,0,0.42)');g.addColorStop(0.55,'rgba(0,0,0,0.22)');g.addColorStop(1,'rgba(0,0,0,0)');
-      ctx.fillStyle=g;ctx.fillRect(-100,-100,200,200);ctx.restore()};
-    scrim(qio(lin(t,0.15,0.6))*(1-eio(lin(t,1.55,1.9))),hy-230,520,230);
-    scrim(qio(lin(t,2.45,2.9))*(1-eio(lin(t,T.END,T.END+0.3))),hy-230,560,250);
-    // Beat A — «امروز اومدیم / شهر زیبای»
-    words(t,[['امروز',T.emrooz],['اومدیم',T.oomadim]],ax,hy-300,70,'SQL',2.0);
-    words(t,[['شهر',T.shahr],['زیبای',T.zibaye]],ax,hy-150,128,'SQB',2.0);
-    // Beat B — Latin kicker with letter-spacing tracking (wide -> tight)
-    {const r=env(t,T.astara+0.10,2.92,0.6,0.3,14);if(r){const p=qio(lin(t,T.astara+0.10,2.6));
-      draw('ASTARA  ·  GILAN',ax,hy-215,44,'SQB',ACC,{r,ls:mix(34,12,p),shadow:0.85})}}
-    // Beat C — «واسه افتتاح شرکت» / «ویهان بتن»
-    words(t,[['واسه',T.vase],['افتتاح',T.eftetah],['شرکت',T.sherkat]],ax,hy-310,72,'SQL',T.END+0.30);
-    words(t,[['ویهان',T.vihan,ACC],['بتن',T.beton,ACC]],ax,hy-150,170,'SQB',T.END+0.30,{gap:0.22});
-    // underline that draws out from the centre (ease in-out) under the brand name
-    {const p=qio(lin(t,T.beton+0.05,T.beton+0.65));if(p>0){ctx.save();const w=360*p;ctx.globalAlpha=0.95;ctx.fillStyle=WHITE;
-      ctx.shadowColor='rgba(0,0,0,0.4)';ctx.shadowBlur=10;ctx.fillRect(ax-w/2,hy-112,w,7);ctx.restore()}}
+    // intro: pixel squares gather where the first line lands
+    pixels(t,1,ax,hy-330,300,60,0.0,10,0.9);
+    // Beat A
+    const pa=words(t,[['امروز',T.emrooz],['اومدیم',T.oomadim]],ax,hy-300,88,'SQM',2.0);
+    const pb=words(t,[['شهر',T.shahr],['زیبای',T.zibaye,'yel']],ax,hy-140,160,'SQB',2.0);
+    pb.forEach(([x,w,t0],i)=>pixels(t,20+i*10,x,hy-200,w*0.6,70,t0,5,0.6));
+    // Beat B — Latin line with letter-spacing tracking (wide -> tight)
+    {const r=env(t,T.astara+0.10,2.92,0.6,0.3,14);if(r){const p=qio(lin(t,T.astara+0.10,2.65));draw('ASTARA  ·  GILAN',safeX(ax,560),hy-250,52,'SQB',YEL,{r,ls:mix(36,12,p)})}}
+    // Beat C — kicker line, leaves upward as the card pops in
+    words(t,[['واسه',T.vase],['افتتاح',T.eftetah],['شرکت',T.sherkat]],ax,hy-290,88,'SQM',CARD_IN+0.30,{dout:0.32});
+    // company card: square, rounded, pops up (scale + blur + rise, eased in & out)
+    if(t>=CARD_IN){const p=qio(lin(t,CARD_IN,CARD_IN+0.55)),cx=safeX(ax,CS),cy=CY0+CS/2+(1-p)*60;
+      halftone(t,cx,cy,CS*0.95,eio(lin(t,CARD_IN+0.15,CARD_IN+0.8)));
+      const im=await cardImg(Math.round((t-CARD_IN)*30)+1);
+      ctx.save();ctx.globalAlpha=p;if(p<0.98)ctx.filter=`blur(${((1-p)*12).toFixed(1)}px)`;ctx.translate(cx,cy);ctx.scale(mix(0.78,1,p),mix(0.78,1,p));
+      ctx.shadowColor='rgba(0,0,0,0.35)';ctx.shadowBlur=24;ctx.shadowOffsetY=8;rr(-CS/2,-CS/2,CS,CS,34);ctx.fillStyle='#111';ctx.fill();ctx.shadowColor='transparent';
+      ctx.save();rr(-CS/2,-CS/2,CS,CS,34);ctx.clip();const z=mix(1.10,1.0,eio(lin(t,CARD_IN,T.END)));ctx.drawImage(im,-CS/2*z,-CS/2*z,CS*z,CS*z);ctx.restore();
+      rr(-CS/2,-CS/2,CS,CS,34);ctx.lineWidth=6;ctx.strokeStyle=WHITE;ctx.stroke();ctx.restore();
+      pill('افتتاح شرکت',cx+CS/2-120,CY0+CS-10+(1-p)*60,40,qio(lin(t,CARD_IN+0.30,CARD_IN+0.75)),(1-qio(lin(t,CARD_IN+0.30,CARD_IN+0.75)))*16);
+      // pixel squares burst from two card corners
+      pixels(t,70,cx-CS/2,CY0+20,70,60,CARD_IN+0.05,6,0.8);pixels(t,90,cx+CS/2,CY0+CS-40,70,60,CARD_IN+0.12,6,0.8);}
+    // white underline drawing out under the brand
+    {const p=qio(lin(t,T.beton+0.10,T.beton+0.70));if(p>0){const {tw}=measure([['ویهان'],['بتن']],176,'SQB',0.22);const cx=safeX(ax,tw);ctx.save();
+      const w=tw*0.62*p;ctx.fillStyle=WHITE;ctx.shadowColor='rgba(0,0,0,0.35)';ctx.shadowBlur=6;ctx.shadowOffsetY=2;ctx.fillRect(cx-w/2,CY0+CS+190,w,7);ctx.restore()}}
   } else {
-    // Beat B — «آستارا» huge, BEHIND the speaker (his matte covers it)
-    const r=env(t,T.astara-0.04,2.95,0.55,0.32,0);
-    if(r){r.s*=mix(1.12,1.0,qio(lin(t,T.astara-0.04,T.astara+0.9)));draw('آستارا',ax,hy+190,300,'SQB',WHITE,{r,shadow:0.35})}
+    // «آستارا» huge, BEHIND the speaker (his matte covers part of it)
+    {const r=env(t,T.astara-0.04,2.95,0.55,0.32,0);
+     if(r){r.s*=mix(1.12,1.0,qio(lin(t,T.astara-0.04,T.astara+0.9)));const {tw}=measure([['آستارا']],340,'SQB',0);draw('آستارا',safeX(ax,tw),hy+200,340,'SQB','white',{r})}}
+    // «ویهان بتن» — the brand, yellow gradient, sits just behind his head under the card
+    const pv=words(t,[['ویهان',T.vihan,'yel'],['بتن',T.beton,'yel']],ax,CY0+CS+150,176,'SQB',T.END+0.3,{gap:0.22});
+    pv.forEach(([x,w,t0],i)=>pixels(t,120+i*10,x,CY0+CS+60,w*0.6,50,t0,4,0.6));
   }
 }
 </script></body></html>
