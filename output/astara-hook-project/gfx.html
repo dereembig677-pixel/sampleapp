@@ -62,7 +62,7 @@ function pill(txt,x,y,size,k,dy=0){if(k<=0)return;ctx.save();ctx.globalAlpha=k;c
   ctx.fillStyle=WHITE;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(txt,x,y+size*0.06);ctx.restore()}
 // word times (CTC aligned, words.json); text appears a couple of frames before the word
 const T={emrooz:0.18,oomadim:0.58,shahr:1.02,zibaye:1.32,astara:1.80,vase:2.50,eftetah:2.78,sherkat:3.22,vihan:3.70,beton:3.98,END:4.867};
-const CARD_IN=3.20, CY0=262, CS=420;
+const CARD_IN=3.20, CY0=268, CS=390;   // top block: card + brand line, always above his head (head >= 840 px from 3.4 s)
 async function render(t,layer){
   ctx.clearRect(0,0,W,H);const c=cam(t);const ax=540+(c.fx-540)*0.6,hy=c.head;
   if(layer==='front'){
@@ -73,9 +73,8 @@ async function render(t,layer){
     const pb=words(t,[['شهر',T.shahr],['زیبای',T.zibaye,'yel']],ax,hy-140,160,'SQB',2.0);
     pb.forEach(([x,w,t0],i)=>pixels(t,20+i*10,x,hy-200,w*0.6,70,t0,5,0.6));
     // Beat B — Latin line with letter-spacing tracking (wide -> tight)
-    {const r=env(t,T.astara+0.10,2.92,0.6,0.3,14);if(r){const p=qio(lin(t,T.astara+0.10,2.65));draw('ASTARA  ·  GILAN',safeX(ax,560),hy-250,52,'SQB',YEL,{r,ls:mix(36,12,p)})}}
     // Beat C — kicker line, leaves upward as the card pops in
-    words(t,[['واسه',T.vase],['افتتاح',T.eftetah],['شرکت',T.sherkat]],ax,hy-290,88,'SQM',CARD_IN+0.30,{dout:0.32});
+    words(t,[['واسه',T.vase],['افتتاح',T.eftetah],['شرکت',T.sherkat]],ax,hy-290,88,'SQM',CARD_IN+0.12,{dout:0.30});
     // company card: square, rounded, pops up (scale + blur + rise, eased in & out)
     if(t>=CARD_IN){const p=qio(lin(t,CARD_IN,CARD_IN+0.55)),cx=safeX(ax,CS),cy=CY0+CS/2+(1-p)*60;
       halftone(t,cx,cy,CS*0.95,eio(lin(t,CARD_IN+0.15,CARD_IN+0.8)));
@@ -84,19 +83,18 @@ async function render(t,layer){
       ctx.shadowColor='rgba(0,0,0,0.35)';ctx.shadowBlur=24;ctx.shadowOffsetY=8;rr(-CS/2,-CS/2,CS,CS,34);ctx.fillStyle='#111';ctx.fill();ctx.shadowColor='transparent';
       ctx.save();rr(-CS/2,-CS/2,CS,CS,34);ctx.clip();const z=mix(1.10,1.0,eio(lin(t,CARD_IN,T.END)));ctx.drawImage(im,-CS/2*z,-CS/2*z,CS*z,CS*z);ctx.restore();
       rr(-CS/2,-CS/2,CS,CS,34);ctx.lineWidth=6;ctx.strokeStyle=WHITE;ctx.stroke();ctx.restore();
-      pill('افتتاح شرکت',cx+CS/2-120,CY0+CS-10+(1-p)*60,40,qio(lin(t,CARD_IN+0.30,CARD_IN+0.75)),(1-qio(lin(t,CARD_IN+0.30,CARD_IN+0.75)))*16);
+      pill('افتتاح شرکت',cx-CS/2+95,CY0+(1-p)*60,38,qio(lin(t,CARD_IN+0.30,CARD_IN+0.75)),(1-qio(lin(t,CARD_IN+0.30,CARD_IN+0.75)))*16);
       // pixel squares burst from two card corners
-      pixels(t,70,cx-CS/2,CY0+20,70,60,CARD_IN+0.05,6,0.8);pixels(t,90,cx+CS/2,CY0+CS-40,70,60,CARD_IN+0.12,6,0.8);}
-    // white underline drawing out under the brand
-    {const p=qio(lin(t,T.beton+0.10,T.beton+0.70));if(p>0){const {tw}=measure([['ویهان'],['بتن']],176,'SQB',0.22);const cx=safeX(ax,tw);ctx.save();
-      const w=tw*0.62*p;ctx.fillStyle=WHITE;ctx.shadowColor='rgba(0,0,0,0.35)';ctx.shadowBlur=6;ctx.shadowOffsetY=2;ctx.fillRect(cx-w/2,CY0+CS+190,w,7);ctx.restore()}}
+      pixels(t,70,cx+CS/2,CY0+30,60,50,CARD_IN+0.05,6,0.8);pixels(t,90,cx-CS/2,CY0+CS-60,60,50,CARD_IN+0.12,6,0.8);
+      // brand under the card, overlapping its bottom edge (reference 01 «CEO» layout) — in front, never on his head
+      const pv=words(t,[['ویهان',T.vihan,'yel'],['بتن',T.beton,'yel']],cx,CY0+CS+118,150,'SQB',T.END+0.3,{gap:0.22});
+      pv.forEach(([x,w,t0],i)=>pixels(t,120+i*10,x,CY0+CS+40,w*0.6,40,t0,4,0.6));}
   } else {
     // «آستارا» huge, BEHIND the speaker (his matte covers part of it)
     {const r=env(t,T.astara-0.04,2.95,0.55,0.32,0);
-     if(r){r.s*=mix(1.12,1.0,qio(lin(t,T.astara-0.04,T.astara+0.9)));const {tw}=measure([['آستارا']],340,'SQB',0);draw('آستارا',safeX(ax,tw),hy+200,340,'SQB','white',{r})}}
+     if(r){r.s*=mix(1.12,1.0,qio(lin(t,T.astara-0.04,T.astara+0.9)));const {tw}=measure([['آستارا']],340,'SQB',0);draw('آستارا',safeX(ax,tw),hy+260,340,'SQB','white',{r})}
+     const r2=env(t,T.astara+0.10,2.92,0.6,0.3,14);if(r2){const p=qio(lin(t,T.astara+0.10,2.65));draw('ASTARA  ·  GILAN',safeX(ax,560),hy-120,50,'SQB',YEL,{r:r2,ls:mix(36,12,p)})}}
     // «ویهان بتن» — the brand, yellow gradient, sits just behind his head under the card
-    const pv=words(t,[['ویهان',T.vihan,'yel'],['بتن',T.beton,'yel']],ax,CY0+CS+150,176,'SQB',T.END+0.3,{gap:0.22});
-    pv.forEach(([x,w,t0],i)=>pixels(t,120+i*10,x,CY0+CS+60,w*0.6,50,t0,4,0.6));
   }
 }
 </script></body></html>

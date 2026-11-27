@@ -1,6 +1,8 @@
 B-roll: Astara photo supplied by the user (astara.png)
 SFX: ghost-editor library (whoosh-2, cc0-whoosh-reverse)
-Fonts: Vazirmatn (SIL OFL, rastikerdar/vazirmatn) as a stand-in for Morabba
+Fonts: Morabba ExtraBold + Bold (user-supplied, licensed, not committed); Vazirmatn (OFL) fallback
 Timing: Whisper large-v3 + CTC forced alignment (jonatasgrosman/wav2vec2-large-xlsr-53-persian), align.py
 Mattes: rembg u2net_human_seg (all frames) + BiRefNet-portrait (B-roll frames 48-95)
 Tracking: OpenCV face detection, smoothed (track.py) -> virtual camera (camera.py)
+Company card B-roll: Mixkit free licence, "Working with concrete" #14729 (https://mixkit.co)
+Music level: Demucs htdemucs two-stem separation, music stem -9 dB
