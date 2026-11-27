@@ -28,7 +28,7 @@ Watch the relevant one (contact sheet + a few full-res frames) before designing 
 - Reference 01's **pixel squares**: use them ONLY as a burst when a B-roll card pops up (not on intro or words). The **pop-up rounded photo card** is liked;
   skip the halftone ring (its dots read as specks on clothing). Recolour everything white/yellow.
 - Audience is usually adults (older than teens): keep it classy and restrained.
-- Background music under speech must be soft; if the clip has music baked in, separate it
+- Background music under speech must be soft (for the Astara hook the user wanted it removed entirely); if the clip has music baked in, separate it
   (Demucs `--two-stems=vocals`) and pull it down ~9 dB. Use suitable, sparse SFX.
 - B-roll may come from Mixkit; Pinterest images are not used (rights + blocked). If a custom image is
   needed, give the user a ready prompt and they generate it themselves in Google Flow.
@@ -73,4 +73,6 @@ Persian talking head on a dark red-curtain set — **the user's preferred motion
 - Text that belongs to a card goes **just above** the card, never overlapping it.
 - Short connector words can flank the head (first word right of the head, second word left — RTL order).
 - Keep each line centred on the speaker while its words arrive; no word should land far from him.
+- Text motion the user liked best: mask reveal (word glides up from behind an invisible baseline, light blur,
+  ~0.6 s cubic ease-in-out); exit = soft fade + slight lift so lines never cross.
 - Watch the whole render (10 fps contact sheet + full-res frames) before delivering.

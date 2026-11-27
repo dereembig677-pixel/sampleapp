@@ -5,4 +5,4 @@ Timing: Whisper large-v3 + CTC forced alignment (jonatasgrosman/wav2vec2-large-x
 Mattes: rembg u2net_human_seg (all frames) + BiRefNet-portrait (B-roll frames 48-95)
 Tracking: OpenCV face detection, smoothed (track.py) -> virtual camera (camera.py)
 Company card: photo supplied by the user (company.jpg, made by the user in Google Flow); Mixkit 14729 was used in an earlier version
-Music level: Demucs htdemucs two-stem separation, music stem -9 dB
+Music: the clip's background music is removed (Demucs htdemucs two-stem separation, vocal stem only)
