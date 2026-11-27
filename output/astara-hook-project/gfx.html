@@ -36,8 +36,11 @@ function measure(list,size,font,gap){ctx.save();ctx.font=`${size}px ${font}`;ctx
 const safeX=(cx,tw)=>clamp(cx,SAFE.x0+tw/2,SAFE.x1-tw/2);
 // a line of RTL words, each revealed on its own spoken time; returns word centres (for pixel squares)
 function words(t,list,cx,y,size,font,end,{gap=0.24,dout=0.30}={}){
-  const {ws,tw}=measure(list,size,font,gap);cx=safeX(cx,tw);let xr=cx+tw/2;const pos=[];
-  list.forEach(([w,t0,col],i)=>{const c=xr-ws[i]/2;draw(w,c,y,size,font,col||WHITE,{r:env(t,t0,end,0.45,dout)});pos.push([c,ws[i],t0]);xr-=ws[i]+size*gap});return pos}
+  // the visible part of the line stays centred on the speaker: the line re-centres smoothly as each word arrives
+  const {ws,tw}=measure(list,size,font,gap);const sp=size*gap;
+  let vis=0;list.forEach(([w,t0],i)=>{vis+=(ws[i]+(i?sp:0))*qio(lin(t,t0,t0+0.45))});
+  cx=safeX(cx,Math.max(vis,1));let xr=cx+vis/2;const pos=[];
+  list.forEach(([w,t0,col],i)=>{const c=xr-ws[i]/2;draw(w,c,y,size,font,col||WHITE,{r:env(t,t0,end,0.45,dout)});pos.push([c,ws[i],t0]);xr-=ws[i]+sp});return pos}
 // pixel squares (reference motif): small white/yellow blocks blink on around a word as it arrives, drift, then dissolve
 function pixels(t,seed,cx,cy,spreadX,spreadY,t0,n=6,life=0.7){
   for(let i=0;i<n;i++){const a=t0+rnd(seed+i)*0.22-0.08,b=a+life*(0.6+0.5*rnd(seed+i+50));if(t<a||t>b)continue;
@@ -49,8 +52,8 @@ function pixels(t,seed,cx,cy,spreadX,spreadY,t0,n=6,life=0.7){
     const cells=sz>=28?2:1,cs=sz/cells;for(let gx=0;gx<cells;gx++)for(let gy=0;gy<cells;gy++){if(lin(p,0,0.3)*4>gx+gy*cells-0.01||cells===1)ctx.fillRect(Math.round(x+gx*cs),Math.round(y+gy*cs),Math.ceil(cs),Math.ceil(cs))}
     ctx.restore()}}
 function rr(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
-function cardImg(n){n=clamp(n,1,54);if(CARD[n])return Promise.resolve(CARD[n]);
-  return new Promise(res=>{const im=new Image();im.onload=()=>{CARD[n]=im;res(im)};im.src=`w/card/${String(n).padStart(5,'0')}.jpg`})}
+function cardImg(){if(CARD.im)return Promise.resolve(CARD.im);   // company photo supplied by the user (company.jpg)
+  return new Promise(res=>{const im=new Image();im.onload=()=>{CARD.im=im;res(im)};im.src='company.jpg'})}
 // halftone dot ring behind the card (reference 01), yellow, slowly turning
 function halftone(t,cx,cy,R,k){if(k<=0)return;ctx.save();ctx.globalAlpha=k*0.55;ctx.fillStyle=YEL;const rot=t*0.15;
   for(let ring=0;ring<16;ring++){const r=R*0.55+ring*R*0.045,cnt=Math.floor(r/9);
@@ -62,7 +65,7 @@ function pill(txt,x,y,size,k,dy=0){if(k<=0)return;ctx.save();ctx.globalAlpha=k;c
   ctx.fillStyle=WHITE;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(txt,x,y+size*0.06);ctx.restore()}
 // word times (CTC aligned, words.json); text appears a couple of frames before the word
 const T={emrooz:0.18,oomadim:0.58,shahr:1.02,zibaye:1.32,astara:1.80,vase:2.50,eftetah:2.78,sherkat:3.22,vihan:3.70,beton:3.98,END:4.867};
-const CARD_IN=3.20, CY0=268, CS=390;   // top block: card + brand line, always above his head (head >= 840 px from 3.4 s)
+const CARD_IN=3.20, CS=360;   // card sits over his torso/belly (reference 01), brand line on his upper chest — never on his head
 async function render(t,layer){
   ctx.clearRect(0,0,W,H);const c=cam(t);const ax=540+(c.fx-540)*0.6,hy=c.head;
   if(layer==='front'){
@@ -74,21 +77,21 @@ async function render(t,layer){
     pb.forEach(([x,w,t0],i)=>pixels(t,20+i*10,x,hy-200,w*0.6,70,t0,5,0.6));
     // Beat B — Latin line with letter-spacing tracking (wide -> tight)
     // Beat C — kicker line, leaves upward as the card pops in
-    words(t,[['واسه',T.vase],['افتتاح',T.eftetah],['شرکت',T.sherkat]],ax,hy-290,88,'SQM',CARD_IN+0.12,{dout:0.30});
+    words(t,[['واسه',T.vase],['افتتاح',T.eftetah],['شرکت',T.sherkat]],ax,hy-80,88,'SQM',T.vihan+0.35,{dout:0.35});  // stays until the brand lands
     // company card: square, rounded, pops up (scale + blur + rise, eased in & out)
-    if(t>=CARD_IN){const p=qio(lin(t,CARD_IN,CARD_IN+0.55)),cx=safeX(ax,CS),cy=CY0+CS/2+(1-p)*60;
-      halftone(t,cx,cy,CS*0.95,eio(lin(t,CARD_IN+0.15,CARD_IN+0.8)));
-      const im=await cardImg(Math.round((t-CARD_IN)*30)+1);
+    if(t>=CARD_IN){const p=qio(lin(t,CARD_IN,CARD_IN+0.55)),cx=safeX(c.fx,CS),CY0=Math.min(1380-CS-20,c.fy+330),cy=CY0+CS/2+(1-p)*60;  // tracked to his belly
+      const im=await cardImg();
       ctx.save();ctx.globalAlpha=p;if(p<0.98)ctx.filter=`blur(${((1-p)*12).toFixed(1)}px)`;ctx.translate(cx,cy);ctx.scale(mix(0.78,1,p),mix(0.78,1,p));
       ctx.shadowColor='rgba(0,0,0,0.35)';ctx.shadowBlur=24;ctx.shadowOffsetY=8;rr(-CS/2,-CS/2,CS,CS,34);ctx.fillStyle='#111';ctx.fill();ctx.shadowColor='transparent';
-      ctx.save();rr(-CS/2,-CS/2,CS,CS,34);ctx.clip();const z=mix(1.10,1.0,eio(lin(t,CARD_IN,T.END)));ctx.drawImage(im,-CS/2*z,-CS/2*z,CS*z,CS*z);ctx.restore();
-      rr(-CS/2,-CS/2,CS,CS,34);ctx.lineWidth=6;ctx.strokeStyle=WHITE;ctx.stroke();ctx.restore();
-      pill('افتتاح شرکت',cx-CS/2+95,CY0+(1-p)*60,38,qio(lin(t,CARD_IN+0.30,CARD_IN+0.75)),(1-qio(lin(t,CARD_IN+0.30,CARD_IN+0.75)))*16);
+      ctx.save();rr(-CS/2,-CS/2,CS,CS,34);ctx.clip();const z=mix(1.14,1.0,eio(lin(t,CARD_IN,T.END)));ctx.drawImage(im,-CS/2*z,-CS/2*z,CS*z,CS*z);ctx.restore();
+      rr(-CS/2,-CS/2,CS,CS,34);ctx.lineWidth=3;ctx.strokeStyle='rgba(255,255,255,0.95)';ctx.stroke();
+      {const q=qio(lin(t,CARD_IN+0.35,CARD_IN+0.95));if(q>0){const o=12;ctx.globalAlpha=p*0.9;ctx.lineWidth=1.6;ctx.strokeStyle=YEL;ctx.setLineDash([(CS+2*o)*4*q,(CS+2*o)*4]);rr(-CS/2-o,-CS/2-o,CS+2*o,CS+2*o,44);ctx.stroke();ctx.setLineDash([])}}
+      ctx.restore();
       // pixel squares burst from two card corners
       pixels(t,70,cx+CS/2,CY0+30,60,50,CARD_IN+0.05,6,0.8);pixels(t,90,cx-CS/2,CY0+CS-60,60,50,CARD_IN+0.12,6,0.8);
-      // brand under the card, overlapping its bottom edge (reference 01 «CEO» layout) — in front, never on his head
-      const pv=words(t,[['ویهان',T.vihan,'yel'],['بتن',T.beton,'yel']],cx,CY0+CS+118,150,'SQB',T.END+0.3,{gap:0.22});
-      pv.forEach(([x,w,t0],i)=>pixels(t,120+i*10,x,CY0+CS+40,w*0.6,40,t0,4,0.6));}
+      // brand on his upper chest, overlapping the card's top edge (reference 01 «CEO» layout)
+      const pv=words(t,[['ویهان',T.vihan,'yel'],['بتن',T.beton,'yel']],cx,CY0+34,140,'SQB',T.END+0.3,{gap:0.22});
+      pv.forEach(([x,w,t0],i)=>pixels(t,120+i*10,x,CY0-50,w*0.6,40,t0,4,0.6));}
   } else {
     // «آستارا» huge, BEHIND the speaker (his matte covers part of it)
     {const r=env(t,T.astara-0.04,2.95,0.55,0.32,0);
