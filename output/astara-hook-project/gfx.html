@@ -35,7 +35,7 @@ function words(t,list,cx,y,size,font,end,{gap=0.26}={}){
   const ws=list.map(w=>ctx.measureText(w[0]).width);const tw=ws.reduce((a,b)=>a+b,0)+sp*(ws.length-1);ctx.restore();
   let xr=cx+tw/2;list.forEach(([w,t0,col],i)=>{draw(w,xr-ws[i]/2,y,size,font,col||WHITE,{r:env(t,t0,end),shadow:col?0.8:0.55});xr-=ws[i]+sp})}
 // word times from CTC alignment (words.json); text appears ~2 frames before it is spoken
-const T={emrooz:0.25,oomadim:0.60,shahr:1.04,zibaye:1.42,astara:1.80,vase:2.50,eftetah:2.78,sherkat:3.20,vihan:3.70,beton:3.98,END:4.867};
+const T={emrooz:0.20,oomadim:0.60,shahr:1.04,zibaye:1.34,astara:1.80,vase:2.50,eftetah:2.78,sherkat:3.20,vihan:3.70,beton:3.98,END:4.867};
 function render(t,layer){
   ctx.clearRect(0,0,W,H);const c=cam(t);
   const ax=540+(c.fx-540)*0.6;           // text tracks the speaker (60 % of his sway, so it stays calm)
@@ -47,8 +47,8 @@ function render(t,layer){
     scrim(qio(lin(t,0.15,0.6))*(1-eio(lin(t,1.55,1.9))),hy-230,520,230);
     scrim(qio(lin(t,2.45,2.9))*(1-eio(lin(t,T.END,T.END+0.3))),hy-230,560,250);
     // Beat A — «امروز اومدیم / شهر زیبای»
-    words(t,[['امروز',T.emrooz],['اومدیم',T.oomadim]],ax,hy-300,70,'SQL',1.86);
-    words(t,[['شهر',T.shahr],['زیبای',T.zibaye]],ax,hy-150,128,'SQB',1.86);
+    words(t,[['امروز',T.emrooz],['اومدیم',T.oomadim]],ax,hy-300,70,'SQL',2.0);
+    words(t,[['شهر',T.shahr],['زیبای',T.zibaye]],ax,hy-150,128,'SQB',2.0);
     // Beat B — Latin kicker with letter-spacing tracking (wide -> tight)
     {const r=env(t,T.astara+0.10,2.92,0.6,0.3,14);if(r){const p=qio(lin(t,T.astara+0.10,2.6));
       draw('ASTARA  ·  GILAN',ax,hy-215,44,'SQB',ACC,{r,ls:mix(34,12,p),shadow:0.85})}}
