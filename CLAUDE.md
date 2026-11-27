@@ -16,4 +16,5 @@ raw footage to edit), always save it, without being asked again:
 If it is unclear whether an uploaded video is a reference or raw footage, ask.
 
 ## Video editing work
-For any short-form video edit, load the `video-references` skill first and follow its standing preferences.
+The user starts edits with `/edit-video <brief>`. For any video edit, run the `edit-video` skill
+(it loads `video-references` first, then the other video skills) even if the user doesn't type the command.
