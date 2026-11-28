@@ -145,21 +145,47 @@ function timelineCard(t,x,y,t0,rot){const en=enter(t,t0,0.34);if(en.p<=0)return;
 
 // chat card for the CTA
 function chatCard(t,x,y,t0){const en=enter(t,t0,0.36);if(en.p<=0)return;const fl=Math.sin((t-t0)*2.2)*5;
+  // DM thread with the editor (pako.frames): the client's message on the right, the editor's reply on the left
   ctx.save();ctx.translate(x,y+fl+(1-en.e)*50);ctx.rotate(-3*Math.PI/180);ctx.scale(en.s,en.s);ctx.globalAlpha*=en.a;if(en.b>0.3)ctx.filter=`blur(${en.b}px)`;
-  const w=520,h=300;rr(-w/2,-h/2,w,h,32);ctx.fillStyle='#fff';ctx.shadowColor='rgba(60,0,0,.28)';ctx.shadowBlur=32;ctx.shadowOffsetY=14;ctx.fill();ctx.shadowColor='transparent';
+  const w=640,h=380;rr(-w/2,-h/2,w,h,36);ctx.fillStyle='#fff';ctx.shadowColor='rgba(60,0,0,.28)';ctx.shadowBlur=32;ctx.shadowOffsetY=14;ctx.fill();ctx.shadowColor='transparent';
   ctx.lineWidth=7;ctx.strokeStyle=RED_B;ctx.stroke();
-  // header
-  ctx.save();ctx.beginPath();ctx.arc(-w/2+56,-h/2+52,32,0,7);ctx.clip();ctx.drawImage(IMG.avatar,-w/2+24,-h/2+20,64,64);ctx.restore();
-  ctx.beginPath();ctx.arc(-w/2+56,-h/2+52,32,0,7);ctx.lineWidth=3;ctx.strokeStyle=RED_B;ctx.stroke();
-  ctx.fillStyle='#1E1B20';ctx.font='31px IR';ctx.textBaseline='middle';ctx.fillText('pako.frames',-w/2+104,-h/2+52);
-  ctx.fillStyle='#E8E6EA';ctx.fillRect(-w/2+24,-h/2+96,w-48,2);
-  // bubbles
-  const b1=enter(t,t0+0.18,0.3);if(b1.p>0){ctx.save();ctx.globalAlpha*=b1.a;ctx.translate((1-b1.e)*-30,0);rr(-w/2+24,-22,330,60,30);ctx.fillStyle='#EFEDF0';ctx.fill();
-    ctx.fillStyle='#1E1B20';ctx.font='26px IR';ctx.fillText('Can you edit my reels?',-w/2+46,9);ctx.restore()}
-  const b2=enter(t,t0+0.50,0.3);if(b2.p>0){ctx.save();ctx.globalAlpha*=b2.a;ctx.translate((1-b2.e)*30,0);rr(w/2-24-250,56,250,60,30);ctx.fillStyle=RED;ctx.fill();
-    ctx.fillStyle='#fff';ctx.font='26px IR';ctx.textAlign='right';ctx.fillText('Send them over',w/2-48,87);ctx.restore()}
+  const av=(cx,cy,r)=>{ctx.save();ctx.beginPath();ctx.arc(cx,cy,r,0,7);ctx.clip();ctx.drawImage(IMG.avatar,cx-r,cy-r,2*r,2*r);ctx.restore()};
+  av(-w/2+62,-h/2+60,36);ctx.beginPath();ctx.arc(-w/2+62,-h/2+60,36,0,7);ctx.lineWidth=3;ctx.strokeStyle=RED_B;ctx.stroke();
+  ctx.fillStyle='#1E1B20';ctx.font='38px IR';ctx.textBaseline='middle';ctx.fillText('pako.frames',-w/2+114,-h/2+52);
+  ctx.fillStyle='#8A8590';ctx.font='26px IR';ctx.fillText('Video editor',-w/2+114,-h/2+88);
+  ctx.fillStyle='#E8E6EA';ctx.fillRect(-w/2+28,-h/2+122,w-56,2);
+  ctx.font='34px IR';
+  const b1=enter(t,t0+0.20,0.3);if(b1.p>0){const tx='Can you edit my reels?',bw=ctx.measureText(tx).width+52;ctx.save();ctx.globalAlpha*=b1.a;ctx.translate((1-b1.e)*30,0);
+    rr(w/2-28-bw,-36,bw,70,35);ctx.fillStyle=RED;ctx.fill();ctx.fillStyle='#fff';ctx.textAlign='right';ctx.fillText(tx,w/2-54,1);ctx.restore()}
+  const b2=enter(t,t0+0.62,0.3);if(b2.p>0){const tx='Send them over!',bw=ctx.measureText(tx).width+52;ctx.save();ctx.globalAlpha*=b2.a;ctx.translate((1-b2.e)*-30,0);
+    av(-w/2+52,92,22);rr(-w/2+86,57,bw,70,35);ctx.fillStyle='#EFEDF0';ctx.fill();ctx.fillStyle='#1E1B20';ctx.textAlign='left';ctx.fillText(tx,-w/2+112,94);ctx.restore()}
   ctx.restore()}
-
+// big word that slams in (scale down from large, blur to sharp) - used for the hook
+function slamWord(t,word,x,y,size,t0,dur=0.24){const p=lin(t,t0,t0+dur);if(p<=0)return;const e=eOut(p);
+  ctx.save();ctx.font=`${size}px IB`;ctx.letterSpacing=`${-0.045*size}px`;const tw=ctx.measureText(word).width;
+  ctx.translate(x,y-size*0.35);const sc=1.55-0.55*e;ctx.scale(sc,sc);ctx.translate(-x,-(y-size*0.35));
+  ctx.globalAlpha*=Math.min(1,e*1.6);if(p<1)ctx.filter=`blur(${(1-e)*14}px)`;ctx.shadowColor='rgba(80,0,0,0.26)';ctx.shadowBlur=22;ctx.shadowOffsetY=10;
+  ctx.fillStyle=bigGrad(x-tw/2,y-size*.75,x+tw/2,y);ctx.fillText(word,x-tw/2,y);ctx.restore()}
+// letters rise from below with a vertical trail - used for "Scroll"
+function riseWord(t,word,x,y,size,t0,stagger=0.035,dur=0.26){
+  ctx.save();ctx.font=`${size}px IB`;ctx.letterSpacing=`${-0.045*size}px`;const tw=ctx.measureText(word).width;let cx=x-tw/2;
+  const grad=bigGrad(x-tw/2,y-size*.75,x+tw/2,y);const ga=ctx.globalAlpha;
+  for(let i=0;i<word.length;i++){const ch=word[i],w=ctx.measureText(ch).width-0.045*size;const p=lin(t,t0+i*stagger,t0+i*stagger+dur);
+    if(p>0){const e=eOut(p),off=(1-e)*140;ctx.shadowColor='rgba(80,0,0,0.26)';ctx.shadowBlur=22;ctx.shadowOffsetY=10;ctx.fillStyle=grad;
+      if(p<1){for(let k=3;k>=1;k--){ctx.globalAlpha=ga*0.15*e;ctx.fillText(ch,cx,y+off+k*22*(1-e))}}
+      ctx.globalAlpha=ga*Math.min(1,e*1.4);ctx.filter=p<1?`blur(${(1-e)*9}px)`:'none';ctx.fillText(ch,cx,y+off);ctx.filter='none'}
+    cx+=w}
+  ctx.restore()}
+// soft-edged wipe reveal left to right - used for "Message"
+const off=document.createElement('canvas');off.width=W;off.height=600;const octx=off.getContext('2d');
+function wipeWord(t,word,x,y,size,t0,dur=0.42){const p=lin(t,t0,t0+dur);if(p<=0)return;const e=eOut(p);
+  octx.setTransform(1,0,0,1,0,0);octx.clearRect(0,0,W,600);octx.globalCompositeOperation='source-over';octx.font=`${size}px IB`;octx.letterSpacing=`${-0.045*size}px`;
+  const tw=octx.measureText(word).width,by=size*1.1;octx.shadowColor='rgba(80,0,0,0.26)';octx.shadowBlur=22;octx.shadowOffsetY=10;
+  const g=octx.createLinearGradient(x-tw/2,by-size*.75,x+tw/2,by);g.addColorStop(0,'#5B0004');g.addColorStop(.45,'#B21715');g.addColorStop(1,'#E8343A');
+  octx.fillStyle=g;octx.fillText(word,x-tw/2+(1-e)*-40,by);
+  octx.shadowColor='transparent';octx.globalCompositeOperation='destination-in';const ex=x-tw/2-80+(tw+200)*e;
+  const m=octx.createLinearGradient(ex-90,0,ex,0);m.addColorStop(0,'rgba(0,0,0,1)');m.addColorStop(1,'rgba(0,0,0,0)');octx.fillStyle=m;octx.fillRect(0,0,W,600);
+  ctx.save();ctx.drawImage(off,0,y-by);ctx.restore()}
 // ---------- story (output seconds; one continuous take, natural pauses kept) ----------
 // the kinetic text spells each full sentence (kicker + keyword + tail), so there are no separate captions
 // 1 problem  0.00-1.62  "Your reels aren't getting views?"
@@ -173,6 +199,10 @@ function checkPill(t,t0,x,y){const en=enter(t,t0,0.3);if(en.p<=0)return;ctx.save
   const cp=lin(t,t0+0.10,t0+0.28);ctx.strokeStyle='#fff';ctx.lineWidth=6;ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();ctx.moveTo(-w/2+29,1);
   if(cp>0){const p1=Math.min(1,cp*2),p2=clamp(cp*2-1);ctx.lineTo(-w/2+29+8*p1,1+8*p1);if(p2>0)ctx.lineTo(-w/2+37+14*p2,9-18*p2);ctx.stroke()}
   ctx.fillStyle=RED_K;ctx.textAlign='left';ctx.textBaseline='middle';ctx.fillText('Delivered',-w/2+74,3);ctx.restore()}
+function editorBadge(x,y,en){ctx.save();ctx.translate(x,y);ctx.scale(en.s,en.s);ctx.globalAlpha*=en.a;if(en.b>0.3)ctx.filter=`blur(${en.b}px)`;
+  ctx.font='34px IS';const tx='edited by pako.frames',w=ctx.measureText(tx).width+100,h=64;rr(-w/2,-h/2,w,h,h/2);ctx.fillStyle='#fff';ctx.shadowColor='rgba(60,0,0,.25)';ctx.shadowBlur=18;ctx.shadowOffsetY=6;ctx.fill();ctx.shadowColor='transparent';
+  ctx.lineWidth=4;ctx.strokeStyle=RED_B;ctx.stroke();ctx.save();ctx.beginPath();ctx.arc(-w/2+34,0,24,0,7);ctx.clip();ctx.drawImage(IMG.avatar,-w/2+10,-24,48,48);ctx.restore();
+  ctx.fillStyle='#1E1B20';ctx.textBaseline='middle';ctx.fillText(tx,-w/2+70,2);ctx.restore()}
 function fmtViews(v){return v>=1e6?(v/1e6).toFixed(1)+'M':v>=1e3?Math.round(v/1e3)+'K':String(Math.round(v))}
 
 // ---------- layers: back = behind the subject (matte), front = over the subject ----------
@@ -180,39 +210,40 @@ function render(t,layer){
   ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,W,H);ctx.filter='none';ctx.globalAlpha=1;
   if(layer==='back'){
     if(t<1.68){ctx.save();ctx.globalAlpha=blockExit(t,1.50,0.18,CX,520);
-      kicker(t,['Your','reels'],CX,300,58,[0.02,0.10]);
-      kicker(t,["aren't",'getting'],CX,364,58,[0.40,0.62],'IM',RED_L);
-      bigWord(t,'Views',CX,590,276,0.70,0.04,0.26);
+      kicker(t,['Your','reels'],CX,296,64,[0.0,0.04],'IS',RED_K);
+      kicker(t,["aren't",'getting'],CX,368,64,[0.10,0.16],'IS',RED_K);
+      slamWord(t,'Views?',CX,596,212,0.06);
       ctx.restore()}
     if(t>=1.62&&t<3.26){ctx.save();ctx.globalAlpha=blockExit(t,3.06,0.18,CX,520);
-      kicker(t,['Let','me'],120,300,58,[1.80,1.88],'IM',RED_K,'left');
-      bigWord(t,'Edit',CX,575,330,1.98,0.045,0.26);
-      kicker(t,['them','for','you'],110,660,50,[2.22,2.34,2.52],'IL',RED_L,'left');
+      kicker(t,['Let','me'],110,296,64,[1.72,1.80],'IS',RED_K,'left');
+      bigWord(t,'Edit',CX,540,290,1.90,0.045,0.26);
+      kicker(t,['them','for','you'],900,630,58,[2.16,2.28,2.44],'IS',RED_K,'right');
       ctx.restore()}
     if(t>=3.20&&t<4.94){ctx.save();ctx.globalAlpha=blockExit(t,4.74,0.18,CX,520);
-      bigWord(t,'Scroll',CX,520,250,3.38,0.035,0.26);
+      riseWord(t,'Scroll',CX,520,250,3.34);
       ctx.restore()}
     if(t>=4.88&&t<6.06){ctx.save();ctx.globalAlpha=blockExit(t,5.84,0.18,CX,520);
-      kicker(t,['fast'],120,310,62,[4.90],'IM',RED_K,'left');
+      kicker(t,['fast'],110,306,68,[4.90],'IS',RED_K,'left');
       typeWord(t,'Delivery',CX,520,196,5.22,5.58);
       ctx.restore()}
     if(t>=6.02){ctx.save();
-      kicker(t,['Send','me','a'],CX,300,58,[6.12,6.26,6.38]);
-      bigWord(t,'Message',CX,500,200,6.44,0.035,0.26);
+      kicker(t,['Send','me','a'],CX,296,64,[6.12,6.26,6.38],'IS',RED_K);
+      wipeWord(t,'Message',CX,500,200,6.42);
       ctx.restore()}
   } else {
     pixels(t,70,250,0.0,0.6,1);pixels(t,820,300,0.04,0.7,2);
     // 1: the problem, a reel nobody watches
     if(t<1.68){ctx.save();ctx.globalAlpha=blockExit(t,1.50,0.18,CX,1100);
-      const c=enter(t,0.92,0.36);if(c.p>0)card(IMG.r1,210,1080,230,330,-6,c.s,c.a,c.b,reelOverlay('12'));
-      const p=enter(t,1.12,0.28);if(p.p>0)pill('12 views',820,650,38,4,p.a,RED,'#fff','eye');
+      const c=enter(t,0.36,0.32);if(c.p>0)card(IMG.r1,210,1080,230,330,-6,c.s,c.a,c.b,reelOverlay('12'));
+      const p=enter(t,0.52,0.26);if(p.p>0)pill('12 views',800,660,44,4,p.a,RED,'#fff','eye');
       ctx.restore()}
     streak(t,1.46,0.42,540,1900,250,110);
     halftone(t,540,700,1.62,0.65,620);
-    // 2: the solution, editing
+    // 2: the solution, proof - raw vs edited split (the two video cards are composited in Python under these labels)
     if(t>=1.62&&t<3.26){ctx.save();ctx.globalAlpha=blockExit(t,3.06,0.18,CX,1100);
-      timelineCard(t,300,1170,2.28,-5);
-      const ip=enter(t,2.48,0.28);if(ip.p>0)playIcon(520,1050,ip.s,10,ip.a);
+      const l1=enter(t,1.92,0.26);if(l1.p>0)pill('Before',170,712,44,-5,l1.a,'rgba(22,20,24,0.88)','#fff');
+      const l2=enter(t,2.02,0.26);if(l2.p>0)pill('After',790,712,44,4,l2.a,RED,'#fff');
+      const bd=enter(t,2.30,0.32);if(bd.p>0)editorBadge(680,1392,bd);
       ctx.restore()}
     halftone(t,540,1050,3.14,0.75,720);
     // 3: a feed scrolls fast and stops on the edited reel, whose views climb
@@ -226,11 +257,15 @@ function render(t,layer){
         const views=hero?fmtViews(Math.pow(lin(t,4.16,4.70),0.6)*1300000):(i%2?'31':'8');
         ctx.save();ctx.globalAlpha*=al;
         if(blurV>0.5){ctx.filter=`blur(${blurV*0.5}px)`}
-        card(im,180+(hero?20*hp:0),y,210,300,hero?-3+3*hp:(i%2?4:-5),sc,1,0,reelOverlay(views));ctx.restore()});
+        ctx.globalAlpha*=1-lin(y,1180,1400);   // fade out before the bottom safe-zone edge
+        card(im,180+(hero?20*hp:0),y,210,300,hero?-3+3*hp:(i%2?4:-5),sc,1,0,reelOverlay(views));
+        if(hero&&hp>0){ctx.globalAlpha=hp;const bx=180+20*hp+105*sc,by=y-150*sc;ctx.save();ctx.beginPath();ctx.arc(bx,by,30,0,7);ctx.fillStyle='#fff';ctx.fill();ctx.clip();ctx.drawImage(IMG.avatar,bx-27,by-27,54,54);ctx.restore();
+          ctx.beginPath();ctx.arc(bx,by,30,0,7);ctx.lineWidth=4;ctx.strokeStyle=RED;ctx.stroke()}
+        ctx.restore()});
       if(t>4.12){const hp=eOut(lin(t,4.12,4.40));ctx.save();ctx.globalAlpha*=hp;ctx.strokeStyle=RED;ctx.lineWidth=4;ctx.shadowColor=RED;ctx.shadowBlur=26;
         rr(200-118*1.12,1000-150*1.12,236*1.12,300*1.12,30);ctx.stroke();ctx.restore()}
-      ctx.save();ctx.shadowColor='rgba(255,255,255,0.6)';ctx.shadowBlur=10;kicker(t,['stopping'],895,606,60,[3.86],'IL',RED_L,'right');
-      kicker(t,['edits'],895,676,60,[4.30],'IS',RED_K,'right');ctx.restore();
+      ctx.save();ctx.shadowColor='rgba(255,255,255,0.6)';ctx.shadowBlur=10;kicker(t,['stopping'],898,606,64,[3.86],'IS',RED_K,'right');
+      kicker(t,['edits'],898,680,64,[4.30],'IS',RED,'right');ctx.restore();
       ctx.restore()}
     // 4: fast delivery
     if(t>=4.88&&t<6.06){ctx.save();ctx.globalAlpha=blockExit(t,5.84,0.18,CX,1100);
@@ -239,7 +274,7 @@ function render(t,layer){
       ctx.restore()}
     // 5: call to action
     if(t>=6.02){
-      chatCard(t,CX,1130,6.62);
+      chatCard(t,CX,1140,6.62);
       const p1=enter(t,6.86,0.28);if(p1.p>0)pill('today',790,600,44,5,p1.a);
       pixels(t,130,240,6.06,6.6,6);
     }
