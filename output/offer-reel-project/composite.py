@@ -40,6 +40,7 @@ plate=cv2.imread(WD+'/plate.png').astype(np.float32)
 rng=np.random.default_rng(7)
 for n in ([int(x) for x in sys.argv[7].split(',')] if len(sys.argv)>7 else range(K,N,NW)):
     t=n/FPS; i,si=src_index(t); s,y=cam(t,i); m=M(s,y)
+    if os.path.exists(f'{O}/{n:04d}.png') or not os.path.exists(f'{WD}/mask/{si:04d}.png'): continue   # resumable; waits for the matte
     src=cv2.imread(f'{WD}/src/{si:04d}.png').astype(np.float32); a=cv2.imread(f'{WD}/mask/{si:04d}.png',0).astype(np.float32)/255
     base=warp(src,m); al=warp(a,m,cv2.INTER_LINEAR)[...,None]; pl=warp(plate,m)
     fg=np.clip((base-(1-al)*pl)/np.maximum(al,0.06),0,255)   # remove grey wall spill from hair edges
