@@ -160,69 +160,88 @@ function chatCard(t,x,y,t0){const en=enter(t,t0,0.36);if(en.p<=0)return;const fl
     ctx.fillStyle='#fff';ctx.font='26px IR';ctx.textAlign='right';ctx.fillText('Send them over',w/2-48,87);ctx.restore()}
   ctx.restore()}
 
+// ---------- story (output seconds; one continuous take, natural pauses kept) ----------
+// the kinetic text spells each full sentence (kicker + keyword + tail), so there are no separate captions
+// 1 problem  0.00-1.62  "Your reels aren't getting views?"
+// 2 solution 1.62-3.20  "Let me edit them for you."
+// 3 benefit  3.20-4.88  "Scroll-stopping edits,"   feed scrolls fast, then stops on the edited reel
+// 4 benefit  4.88-6.02  "fast delivery."
+// 5 CTA      6.02-8.00  "Send me a message today."
+function checkPill(t,t0,x,y){const en=enter(t,t0,0.3);if(en.p<=0)return;ctx.save();ctx.translate(x,y);ctx.scale(en.s,en.s);ctx.globalAlpha*=en.a;if(en.b>0.3)ctx.filter=`blur(${en.b}px)`;
+  ctx.font='42px IS';const w=ctx.measureText('Delivered').width+110,h=72;rr(-w/2,-h/2,w,h,h/2);ctx.fillStyle='#fff';ctx.shadowColor='rgba(60,0,0,.25)';ctx.shadowBlur=20;ctx.shadowOffsetY=8;ctx.fill();ctx.shadowColor='transparent';
+  ctx.lineWidth=5;ctx.strokeStyle=RED_B;ctx.stroke();ctx.beginPath();ctx.arc(-w/2+40,0,22,0,7);ctx.fillStyle=RED;ctx.fill();
+  const cp=lin(t,t0+0.10,t0+0.28);ctx.strokeStyle='#fff';ctx.lineWidth=6;ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();ctx.moveTo(-w/2+29,1);
+  if(cp>0){const p1=Math.min(1,cp*2),p2=clamp(cp*2-1);ctx.lineTo(-w/2+29+8*p1,1+8*p1);if(p2>0)ctx.lineTo(-w/2+37+14*p2,9-18*p2);ctx.stroke()}
+  ctx.fillStyle=RED_K;ctx.textAlign='left';ctx.textBaseline='middle';ctx.fillText('Delivered',-w/2+74,3);ctx.restore()}
+function fmtViews(v){return v>=1e6?(v/1e6).toFixed(1)+'M':v>=1e3?Math.round(v/1e3)+'K':String(Math.round(v))}
+
 // ---------- layers: back = behind the subject (matte), front = over the subject ----------
 function render(t,layer){
   ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,W,H);ctx.filter='none';ctx.globalAlpha=1;
   if(layer==='back'){
-    // A: Your reels aren't getting / Views
-    if(t<1.48){ctx.save();ctx.globalAlpha=blockExit(t,1.30,0.18,CX,520);
-      kicker(t,['Your','reels'],CX,300,58,[0.0,0.08]);
-      kicker(t,["aren't",'getting'],CX,364,58,[0.36,0.56],'IM',RED_L);
-      bigWord(t,'Views',CX,590,276,0.68,0.035,0.22);
+    if(t<1.68){ctx.save();ctx.globalAlpha=blockExit(t,1.50,0.18,CX,520);
+      kicker(t,['Your','reels'],CX,300,58,[0.02,0.10]);
+      kicker(t,["aren't",'getting'],CX,364,58,[0.40,0.62],'IM',RED_L);
+      bigWord(t,'Views',CX,590,276,0.70,0.04,0.26);
       ctx.restore()}
-    // B: Let me / Edit / them for you
-    if(t>=1.40&&t<2.66){ctx.save();ctx.globalAlpha=blockExit(t,2.46,0.18,CX,520);
-      kicker(t,['Let','me'],120,300,58,[1.40,1.48],'IM',RED_K,'left');
-      bigWord(t,'Edit',CX,575,330,1.58,0.04,0.22);
-      kicker(t,['them','for','you'],110,660,50,[1.82,1.94,2.14],'IL',RED_L,'left');
+    if(t>=1.62&&t<3.26){ctx.save();ctx.globalAlpha=blockExit(t,3.06,0.18,CX,520);
+      kicker(t,['Let','me'],120,300,58,[1.80,1.88],'IM',RED_K,'left');
+      bigWord(t,'Edit',CX,575,330,1.98,0.045,0.26);
+      kicker(t,['them','for','you'],110,660,50,[2.22,2.34,2.52],'IL',RED_L,'left');
       ctx.restore()}
-    // C: Scroll / stopping
-    if(t>=2.58&&t<4.06){ctx.save();ctx.globalAlpha=blockExit(t,3.88,0.18,CX,520);
-      bigWord(t,'Scroll',CX,520,250,2.56,0.03,0.22);
+    if(t>=3.20&&t<4.94){ctx.save();ctx.globalAlpha=blockExit(t,4.74,0.18,CX,520);
+      bigWord(t,'Scroll',CX,520,250,3.38,0.035,0.26);
       ctx.restore()}
-    // D: fast / Delivery
-    if(t>=3.98&&t<4.94){ctx.save();ctx.globalAlpha=blockExit(t,4.74,0.16,CX,520);
-      kicker(t,['fast'],120,310,62,[3.96],'IM',RED_K,'left');
-      typeWord(t,'Delivery',CX,520,196,4.20,4.52);
+    if(t>=4.88&&t<6.06){ctx.save();ctx.globalAlpha=blockExit(t,5.84,0.18,CX,520);
+      kicker(t,['fast'],120,310,62,[4.90],'IM',RED_K,'left');
+      typeWord(t,'Delivery',CX,520,196,5.22,5.58);
       ctx.restore()}
-    // E: Send me a / Message
-    if(t>=4.86){ctx.save();
-      kicker(t,['Send','me','a'],CX,300,58,[4.86,5.00,5.12]);
-      bigWord(t,'Message',CX,500,200,5.16,0.03,0.22);
+    if(t>=6.02){ctx.save();
+      kicker(t,['Send','me','a'],CX,300,58,[6.12,6.26,6.38]);
+      bigWord(t,'Message',CX,500,200,6.44,0.035,0.26);
       ctx.restore()}
   } else {
-    pixels(t,70,250,0.0,0.62,1);pixels(t,820,300,0.04,0.72,2);
-    // A: reel card with a tiny view count
-    if(t<1.48){ctx.save();ctx.globalAlpha=blockExit(t,1.30,0.18,CX,1100);
-      const c=enter(t,0.86,0.32);if(c.p>0)card(IMG.r1,210,1130,230,330,-6,c.s,c.a,c.b,reelOverlay('12'));
-      const p=enter(t,1.02,0.24);if(p.p>0)pill('12 views',820,650,38,4,p.a,RED,'#fff','eye');
+    pixels(t,70,250,0.0,0.6,1);pixels(t,820,300,0.04,0.7,2);
+    // 1: the problem, a reel nobody watches
+    if(t<1.68){ctx.save();ctx.globalAlpha=blockExit(t,1.50,0.18,CX,1100);
+      const c=enter(t,0.92,0.36);if(c.p>0)card(IMG.r1,210,1080,230,330,-6,c.s,c.a,c.b,reelOverlay('12'));
+      const p=enter(t,1.12,0.28);if(p.p>0)pill('12 views',820,650,38,4,p.a,RED,'#fff','eye');
       ctx.restore()}
-    // transition A->B
-    streak(t,1.26,0.40,540,1900,250,110);
-    halftone(t,540,700,1.40,0.62,620);
-    // B: editing timeline card
-    if(t>=1.40&&t<2.66){ctx.save();ctx.globalAlpha=blockExit(t,2.46,0.18,CX,1100);
-      timelineCard(t,300,1230,1.86,-5);
-      const ip=enter(t,2.04,0.26);if(ip.p>0)playIcon(520,1110,ip.s,10,ip.a);
-      pixels(t,780,1060,1.90,2.40,3,5,18);
+    streak(t,1.46,0.42,540,1900,250,110);
+    halftone(t,540,700,1.62,0.65,620);
+    // 2: the solution, editing
+    if(t>=1.62&&t<3.26){ctx.save();ctx.globalAlpha=blockExit(t,3.06,0.18,CX,1100);
+      timelineCard(t,300,1170,2.28,-5);
+      const ip=enter(t,2.48,0.28);if(ip.p>0)playIcon(520,1050,ip.s,10,ip.a);
       ctx.restore()}
-    halftone(t,540,1050,2.52,0.75,720);
-    // C: reel thumbnails scrolling upward on the left, "edits" pill
-    if(t>=2.58&&t<4.06){ctx.save();ctx.globalAlpha=blockExit(t,3.88,0.18,CX,1100);
-      ctx.save();ctx.shadowColor='rgba(255,255,255,0.6)';ctx.shadowBlur=10;kicker(t,['stopping'],895,606,60,[3.00],'IL',RED_L,'right');ctx.restore();
-      const sc=eIO(lin(t,2.70,3.70))*260;
-      const k=[[IMG.r2,1000,'48.2K',2.62],[IMG.r4,1360,'1.3M',2.74],[IMG.r3,1720,'210K',2.86]];
-      k.forEach(([im,yy,v,t0],i)=>{const en=enter(t,t0,0.32);if(en.p>0)card(im,190+(i%2)*18,yy-sc,230,330,i%2?4:-5,en.s,en.a,en.b,reelOverlay(v))});
-      const ep=enter(t,3.44,0.26);if(ep.p>0)pill('edits',760,1020,44,-4,ep.a);
+    halftone(t,540,1050,3.14,0.75,720);
+    // 3: a feed scrolls fast and stops on the edited reel, whose views climb
+    if(t>=3.20&&t<4.94){ctx.save();ctx.globalAlpha=blockExit(t,4.74,0.18,CX,1100);
+      const sp=eOut(lin(t,3.24,4.10)); const off=(1-sp)*1500;
+      const feed=[[IMG.r2,640,null],[IMG.r4,1000,'hero'],[IMG.r3,1360,null],[IMG.r1,1720,null],[IMG.r2,2080,null]];
+      const blurV=(1-sp)*14;
+      feed.forEach(([im,yy,tag],i)=>{const y=yy+off;if(y<-200||y>2200)return;
+        const hero=tag==='hero', hp=hero?eOut(lin(t,4.12,4.40)):0;
+        const sc=1+0.12*hp, al=hero?1:1-0.55*eOut(lin(t,4.12,4.40));
+        const views=hero?fmtViews(Math.pow(lin(t,4.16,4.70),0.6)*1300000):(i%2?'31':'8');
+        ctx.save();ctx.globalAlpha*=al;
+        if(blurV>0.5){ctx.filter=`blur(${blurV*0.5}px)`}
+        card(im,180+(hero?20*hp:0),y,210,300,hero?-3+3*hp:(i%2?4:-5),sc,1,0,reelOverlay(views));ctx.restore()});
+      if(t>4.12){const hp=eOut(lin(t,4.12,4.40));ctx.save();ctx.globalAlpha*=hp;ctx.strokeStyle=RED;ctx.lineWidth=4;ctx.shadowColor=RED;ctx.shadowBlur=26;
+        rr(200-118*1.12,1000-150*1.12,236*1.12,300*1.12,30);ctx.stroke();ctx.restore()}
+      ctx.save();ctx.shadowColor='rgba(255,255,255,0.6)';ctx.shadowBlur=10;kicker(t,['stopping'],895,606,60,[3.86],'IL',RED_L,'right');
+      kicker(t,['edits'],895,676,60,[4.30],'IS',RED_K,'right');ctx.restore();
       ctx.restore()}
-    // D: speed streaks
-    if(t>=3.98&&t<4.94){hstreak(t,4.00,0.34,1180);hstreak(t,4.10,0.30,1260);}
-    hstreak(t,4.62,0.28,1150);
-    // E: chat card, pills, CTA
-    if(t>=4.86){
-      chatCard(t,CX,1210,5.30);
-      const p1=enter(t,5.56,0.26);if(p1.p>0)pill('today',790,600,44,5,p1.a);
-      pixels(t,130,240,4.90,5.50,6);pixels(t,840,420,5.60,6.20,7,5,18);
+    // 4: fast delivery
+    if(t>=4.88&&t<6.06){ctx.save();ctx.globalAlpha=blockExit(t,5.84,0.18,CX,1100);
+      hstreak(t,4.96,0.36,1120);hstreak(t,5.06,0.32,1200);
+      checkPill(t,5.42,740,320);
+      ctx.restore()}
+    // 5: call to action
+    if(t>=6.02){
+      chatCard(t,CX,1130,6.62);
+      const p1=enter(t,6.86,0.28);if(p1.p>0)pill('today',790,600,44,5,p1.a);
+      pixels(t,130,240,6.06,6.6,6);
     }
   }
 }

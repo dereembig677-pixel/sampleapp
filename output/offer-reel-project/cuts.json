@@ -1,1 +1,54 @@
-{"fps_src":24,"segments":[[0.62,2.02],[2.38,3.56],[4.00,5.40],[5.57,6.45],[6.74,8.45]]}
+{
+ "fps_src": 24,
+ "segments": [
+  [
+   0.58,
+   8.58
+  ]
+ ],
+ "roomtone": [
+  2.05,
+  2.33
+ ],
+ "patches": [
+  [
+   2.33,
+   2.42
+  ],
+  [
+   3.75,
+   4.02
+  ],
+  [
+   5.42,
+   5.56
+  ]
+ ],
+ "note": "One continuous take with the natural pauses kept; breaths and a lip click inside the pauses are replaced with room tone.",
+ "sfx": [
+  [
+   "whoosh-2",
+   1.62,
+   0.85,
+   -18
+  ],
+  [
+   "whoosh-2",
+   3.2,
+   0.85,
+   -19
+  ],
+  [
+   "cc0-swell-short",
+   6.02,
+   1.57,
+   -23
+  ],
+  [
+   "send-swoosh",
+   6.7,
+   0.23,
+   -22
+  ]
+ ]
+}

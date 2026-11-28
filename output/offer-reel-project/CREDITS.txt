@@ -1,5 +1,4 @@
-Music: "Brainiac" - Mixkit (Mixkit Free Music licence, commercial OK, no attribution required)
-SFX (Mixkit Free SFX licence / CC0, from the ghost-editor sound library): whoosh-cine, whoosh-3, cinematic-deep-boom,
-  tech-digital-whoosh, tech-glitch-2, cinematic-film-flash, tech-notification-2
+Music: "Loser (Instrumental, Nerdy)" - supplied by the user (not committed to the repo).
+SFX (Mixkit Free SFX licence / CC0, from the ghost-editor sound library): whoosh-2 (x2), cc0-swell-short, send-swoosh
 Fonts: Inter (SIL Open Font License)
-Card thumbnails: stills cut from the speaker's own footage.
+Card thumbnails: stills cut from the speaker's own footage. Chat avatar: the page's profile picture (supplied by the user).

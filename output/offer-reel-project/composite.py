@@ -13,15 +13,16 @@ def src_index(t):
     st=SEG[i][0]+(t-starts[i]); return i,min(int(round(st*24)),239)
 
 # camera per segment: scale and where the face lands vertically; alternate tight/wide so the jump cuts read as intentional punch-ins
+BEATS=[0.0,1.62,3.20,4.88,6.02,99]   # framing changes happen inside the speaker's pauses (one continuous take)
 def cam(t,i):
     # returns scale and the output y of the focus point; ht = where the top of the head lands (source head top is y~515),
-    # chosen so the head covers only the bottom quarter of each keyword, as in the reference
-    lt=t-starts[i]; d=starts[i+1]-starts[i]
-    if i==0:   # opening punch-in from wide, then a slow creep
+    # chosen so the head covers only the bottom quarter of each keyword
+    b=int(np.searchsorted(BEATS,t,side='right')-1); lt=t-BEATS[b]; d=min(BEATS[b+1],TOTAL)-BEATS[b]
+    if b==0:   # opening punch-in from wide, then a slow creep
         p=eOut(lin(lt,0,0.30)); s=1.04+0.20*p+0.03*lin(lt,0.3,d); ht=575-55*p
-    elif i==1: s=1.04+0.03*lin(lt,0,d); ht=490
-    elif i==2: s=1.30+0.03*lin(lt,0,d); ht=510
-    elif i==3: s=1.12+0.025*lin(lt,0,d); ht=525
+    elif b==1: s=1.04+0.03*lin(lt,0,d); ht=490
+    elif b==2: s=1.30+0.03*lin(lt,0,d); ht=510
+    elif b==3: s=1.12+0.025*lin(lt,0,d); ht=525
     else:
         p=eIO(lin(lt,0,d)); s=1.05+0.08*p; ht=505
     return s, ht+(FY-515)*s
@@ -47,16 +48,14 @@ for n in ([int(x) for x in sys.argv[7].split(',')] if len(sys.argv)>7 else range
     back=cv2.imread(f'{G}/back/{n:04d}.png',cv2.IMREAD_UNCHANGED); front=cv2.imread(f'{G}/front/{n:04d}.png',cv2.IMREAD_UNCHANGED)
     comp=over(base,back); comp=comp*(1-al)+fg*al; comp=over(comp,front)
     # transitions
-    zb=max(0,1-abs(t-1.40)/0.13)*0.09 + max(0,1-abs(t-2.58)/0.12)*0.07
+    zb=max(0,1-abs(t-1.62)/0.13)*0.08 + max(0,1-abs(t-3.20)/0.12)*0.06
     if zb>0.004: comp=zoomblur(comp,zb)
-    if 4.66<=t<4.86:   # bloom to white into the last beat
-        bl=eIn(lin(t,4.66,4.86)); glow=cv2.GaussianBlur(comp,(0,0),25); comp=comp*(1-bl)+(255*0.88+glow*0.12)*bl
-    if 4.86<=t<5.16:
-        wf=eIn(1-lin(t,4.86,5.16)); comp=comp*(1-wf)+255*wf
+    if 5.84<=t<6.02:   # bloom to white into the last beat
+        bl=eIn(lin(t,5.84,6.02)); glow=cv2.GaussianBlur(comp,(0,0),25); comp=comp*(1-bl)+(255*0.88+glow*0.12)*bl
+    if 6.02<=t<6.32:
+        wf=eIn(1-lin(t,6.02,6.32)); comp=comp*(1-wf)+255*wf
     g=(1-lin(t,0,0.13))*6
     if g>0.3: comp=cv2.GaussianBlur(comp,(0,0),g)
-    if 3.98<=t<4.04:   # two-frame inverted glitch on the hard cut
-        inv=255-cv2.GaussianBlur(comp,(0,0),10); comp=comp*0.35+inv*0.65*np.array([1.0,0.92,1.15])
     # fine luma grain so graphics and footage sit in one image
     comp+=rng.normal(0,2.2,(H,W,1)).astype(np.float32)
     cv2.imwrite(f'{O}/{n:04d}.png',np.clip(comp,0,255).astype(np.uint8))
