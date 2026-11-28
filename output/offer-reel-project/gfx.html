@@ -16,7 +16,7 @@ canvas{display:block}
 const W=1080,H=1920, cv=document.getElementById('c'), ctx=cv.getContext('2d');
 const RED='#D7141A', RED_B='#E3262B', RED_K='#8C1A22', RED_L='#B4454B';
 const CX=500; // text axis, keeps text inside the Shorts safe zone (x 60-900)
-const IMG={}; const names=['r1','r2','r3','r4'];
+const IMG={}; const names=['r1','r2','r3','r4','avatar'];
 window.ready=Promise.all([...names.map(n=>new Promise(r=>{const i=new Image();i.onload=()=>{IMG[n]=i;r()};i.src='assets/'+n+'.png'})),
   ...['IB','IM','IL','IS','IR'].map(f=>document.fonts.load(`40px ${f}`))]);
 
@@ -149,8 +149,9 @@ function chatCard(t,x,y,t0){const en=enter(t,t0,0.36);if(en.p<=0)return;const fl
   const w=520,h=300;rr(-w/2,-h/2,w,h,32);ctx.fillStyle='#fff';ctx.shadowColor='rgba(60,0,0,.28)';ctx.shadowBlur=32;ctx.shadowOffsetY=14;ctx.fill();ctx.shadowColor='transparent';
   ctx.lineWidth=7;ctx.strokeStyle=RED_B;ctx.stroke();
   // header
-  ctx.save();rr(-w/2+24,-h/2+24,52,52,26);ctx.clip();ctx.drawImage(IMG.r3,-w/2+18,-h/2+18,64,82);ctx.restore();
-  ctx.fillStyle='#1E1B20';ctx.font='30px IR';ctx.textBaseline='middle';ctx.fillText('New message',-w/2+92,-h/2+50);
+  ctx.save();ctx.beginPath();ctx.arc(-w/2+56,-h/2+52,32,0,7);ctx.clip();ctx.drawImage(IMG.avatar,-w/2+24,-h/2+20,64,64);ctx.restore();
+  ctx.beginPath();ctx.arc(-w/2+56,-h/2+52,32,0,7);ctx.lineWidth=3;ctx.strokeStyle=RED_B;ctx.stroke();
+  ctx.fillStyle='#1E1B20';ctx.font='30px IR';ctx.textBaseline='middle';ctx.fillText('New message',-w/2+104,-h/2+52);
   ctx.fillStyle='#E8E6EA';ctx.fillRect(-w/2+24,-h/2+96,w-48,2);
   // bubbles
   const b1=enter(t,t0+0.18,0.3);if(b1.p>0){ctx.save();ctx.globalAlpha*=b1.a;ctx.translate((1-b1.e)*-30,0);rr(-w/2+24,-22,330,60,30);ctx.fillStyle='#EFEDF0';ctx.fill();
