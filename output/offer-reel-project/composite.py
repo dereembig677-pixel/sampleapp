@@ -48,7 +48,7 @@ def proof_frame(t):
 def raw_grade(img,k):   # flat, slightly desaturated "camera original" look
     if k<=0: return img
     g=img.mean(2,keepdims=True); r=(img*0.55+g*0.45)*0.80+30          # flat, washed-out, like an ungraded phone file
-    r=cv2.GaussianBlur(r,(0,0),0.9)*np.array([1.02,1.0,0.97],np.float32)
+    r=cv2.GaussianBlur(r,(0,0),0.9)   # neutral, no colour cast
     return img*(1-k)+r*k
 
 def zoomblur(img,amt,k=8,c=(540,800)):
@@ -74,12 +74,8 @@ for n in ([int(x) for x in sys.argv[7].split(',')] if len(sys.argv)>7 else range
         base=raw_grade(base,rk); fg=raw_grade(fg,rk)
         comp=over(base,back); comp=comp*(1-al)+fg*al; comp=over(comp,front)
     # transitions
-    zb=max(0,1-abs(t-0.75)/0.10)*0.07 + max(0,1-abs(t-1.45)/0.13)*0.08 + max(0,1-abs(t-3.40)/0.12)*0.06
+    zb=max(0,1-abs(t-0.75)/0.10)*0.07 + max(0,1-abs(t-1.45)/0.13)*0.08 + max(0,1-abs(t-3.40)/0.12)*0.06 + max(0,1-abs(t-6.02)/0.11)*0.06
     if zb>0.004: comp=zoomblur(comp,zb)
-    if 5.84<=t<6.02:   # bloom to white into the last beat
-        bl=eIn(lin(t,5.84,6.02)); glow=cv2.GaussianBlur(comp,(0,0),25); comp=comp*(1-bl)+(255*0.88+glow*0.12)*bl
-    if 6.02<=t<6.32:
-        wf=eIn(1-lin(t,6.02,6.32)); comp=comp*(1-wf)+255*wf
     if 0.75<=t<0.85: comp=comp*(1-0.55*(1-lin(t,0.75,0.85)))+255*0.55*(1-lin(t,0.75,0.85))   # snap flash
     # fine luma grain so graphics and footage sit in one image
     comp+=rng.normal(0,2.2,(H,W,1)).astype(np.float32)

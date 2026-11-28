@@ -1,5 +1,5 @@
 Music: "Loser (Instrumental, Nerdy)" - supplied by the user (not committed to the repo).
-SFX (Mixkit Free SFX licence / CC0, from the ghost-editor sound library): whoosh-2 (x2), cc0-swell-short, send-swoosh
+SFX (Mixkit Free SFX licence / CC0, from the ghost-editor sound library): whoosh-2, send-swoosh, tech-keyboard-burst, tick-1, pop-2
 Fonts: Inter (SIL Open Font License)
-Card thumbnails: stills cut from the speaker's own footage. Chat avatar: the page's profile picture (supplied by the user).
+Card thumbnails: stills from the speaker's own footage and from the editor's portfolio (pf_*.jpg, supplied by the user).
 Before/after proof: the user's own raw clip and their edit of it (supplied by the user, not committed).
