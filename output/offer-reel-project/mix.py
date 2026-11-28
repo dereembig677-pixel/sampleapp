@@ -39,15 +39,21 @@ for a0,a1,gdb in C.get('music_lift',[]):   # music carries the moments with no v
     w=np.clip((tt-a0)/0.25,0,1)*np.clip((a1-tt)/0.25,0,1); bump*=1+(10**(gdb/20)-1)*w
 mix=voice + mus*(10**(-22/20))*(duck*fade*bump)[:,None]
 SFXL=C.get('sfx',[])
-for e in SFXL:   # [file, peak time in video, peak offset inside the (trimmed) clip, gain dB, optional start in file, optional length]
-    name,peak_at,peak_off,gain=e[:4]; ss=e[4] if len(e)>4 else 0; du=e[5] if len(e)>5 else None
+def st_rms(x,win=int(0.1*SR)):   # loudest 100 ms RMS - a short-term loudness estimate, used to match effects by how loud they feel
+    m=x.mean(1)**2; c=np.convolve(m,np.ones(win)/win,'valid'); return np.sqrt(c.max()+1e-12)
+VREF=st_rms(voice)
+sduck=1-0.5*np.clip(env/0.02,0,1)                 # effects dip ~6 dB while the speaker talks
+k3=int(0.06*SR); sduck=np.convolve(np.pad(sduck,(k3,k3),'edge'),np.ones(k3)/k3,'same')[k3:-k3]
+bus=np.zeros_like(mix)
+for e in SFXL:   # [file, peak time in video, peak offset inside the (trimmed) clip, level dB relative to the voice's loudest moment, start in file, length]
+    name,peak_at,peak_off,rel=e[:4]; ss=e[4] if len(e)>4 else 0; du=e[5] if len(e)>5 else None
     s=load(f'{SFX}/{name}' if '.' in name else f'{SFX}/{name}.wav',ss if ss else None,du)
-    s=s/max(np.abs(s).max(),1e-6)*10**(-1/20)            # peak-normalise every effect to -1 dBFS, then apply its gain
     if du: f=min(len(s),int(0.08*SR)); s[-f:]*=np.linspace(1,0,f)[:,None]
     f=min(len(s),int(0.004*SR)); s[:f]*=np.linspace(0,1,f)[:,None]
-    s=s*10**(gain/20); i=int((peak_at-peak_off)*SR)
-    if i<0: s=s[-i:]; i=0      # sound starts before the video: keep only its tail
-    j=min(N,i+len(s)); mix[i:j]+=s[:j-i]
+    s=s*(VREF*10**(rel/20)/st_rms(s)); i=int((peak_at-peak_off)*SR)
+    if i<0: s=s[-i:]; i=0
+    j=min(N,i+len(s)); bus[i:j]+=s[:j-i]
+mix+=bus*sduck[:,None]
 mix=np.tanh(mix*0.98)/0.98 if np.abs(mix).max()>0.98 else mix
 subprocess.run(['ffmpeg','-v','error','-y','-f','f32le','-ar',str(SR),'-ac','2','-i','-','-c:a','pcm_s16le',OUT],input=mix.astype(np.float32).tobytes(),check=True)
 print('ok',round(T,3))
