@@ -179,7 +179,6 @@ function render(t,layer){
     // C: Scroll / stopping
     if(t>=2.58&&t<4.06){ctx.save();ctx.globalAlpha=blockExit(t,3.88,0.18,CX,520);
       bigWord(t,'Scroll',CX,520,250,2.56,0.03,0.22);
-      kicker(t,['stopping'],880,606,62,[3.00],'IL',RED_L,'right');
       ctx.restore()}
     // D: fast / Delivery
     if(t>=3.98&&t<4.94){ctx.save();ctx.globalAlpha=blockExit(t,4.74,0.16,CX,520);
@@ -210,6 +209,7 @@ function render(t,layer){
     halftone(t,540,1050,2.52,0.75,720);
     // C: reel thumbnails scrolling upward on the left, "edits" pill
     if(t>=2.58&&t<4.06){ctx.save();ctx.globalAlpha=blockExit(t,3.88,0.18,CX,1100);
+      ctx.save();ctx.shadowColor='rgba(255,255,255,0.6)';ctx.shadowBlur=10;kicker(t,['stopping'],895,606,60,[3.00],'IL',RED_L,'right');ctx.restore();
       const sc=eIO(lin(t,2.70,3.70))*260;
       const k=[[IMG.r2,1000,'48.2K',2.62],[IMG.r4,1360,'1.3M',2.74],[IMG.r3,1720,'210K',2.86]];
       k.forEach(([im,yy,v,t0],i)=>{const en=enter(t,t0,0.32);if(en.p>0)card(im,190+(i%2)*18,yy-sc,230,330,i%2?4:-5,en.s,en.a,en.b,reelOverlay(v))});

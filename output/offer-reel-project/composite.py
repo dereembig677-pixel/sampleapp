@@ -15,15 +15,15 @@ def src_index(t):
 # camera per segment: scale and where the face lands vertically; alternate tight/wide so the jump cuts read as intentional punch-ins
 def cam(t,i):
     # returns scale and the output y of the focus point; ht = where the top of the head lands (source head top is y~515),
-    # chosen so the head covers the lower third of each keyword, as in the reference
+    # chosen so the head covers only the bottom quarter of each keyword, as in the reference
     lt=t-starts[i]; d=starts[i+1]-starts[i]
     if i==0:   # opening punch-in from wide, then a slow creep
-        p=eOut(lin(lt,0,0.30)); s=1.04+0.20*p+0.03*lin(lt,0.3,d); ht=560-60*p
-    elif i==1: s=1.04+0.03*lin(lt,0,d); ht=470
-    elif i==2: s=1.30+0.03*lin(lt,0,d); ht=440
-    elif i==3: s=1.12+0.025*lin(lt,0,d); ht=450
+        p=eOut(lin(lt,0,0.30)); s=1.04+0.20*p+0.03*lin(lt,0.3,d); ht=575-55*p
+    elif i==1: s=1.04+0.03*lin(lt,0,d); ht=490
+    elif i==2: s=1.30+0.03*lin(lt,0,d); ht=510
+    elif i==3: s=1.12+0.025*lin(lt,0,d); ht=525
     else:
-        p=eIO(lin(lt,0,d)); s=1.05+0.08*p; ht=430
+        p=eIO(lin(lt,0,d)); s=1.05+0.08*p; ht=505
     return s, ht+(FY-515)*s
 def M(s,y): return np.float32([[s,0,540-FX*s],[0,s,y-FY*s]])
 def warp(img,m,interp=cv2.INTER_CUBIC): return cv2.warpAffine(img,m,(W,H),flags=interp,borderMode=cv2.BORDER_REPLICATE)
