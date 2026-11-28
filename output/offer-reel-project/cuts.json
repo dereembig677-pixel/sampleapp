@@ -3,7 +3,7 @@
  "segments": [
   [
    0.58,
-   9.18
+   9.78
   ]
  ],
  "roomtone": [
@@ -16,6 +16,10 @@
    2.42
   ],
   [
+   2.38,
+   3.56
+  ],
+  [
    3.75,
    4.02
   ],
@@ -25,10 +29,10 @@
   ],
   [
    8.3,
-   9.18
+   9.78
   ]
  ],
- "note": "One continuous take with natural pauses kept; breaths, a lip click and the digital-silence tail are replaced with room tone.",
+ "note": "One continuous take with natural pauses kept. Breaths, a lip click and the digital-silence tail are replaced with room tone. The line 'Let me edit them for you' (src 2.45-3.48) is also replaced with room tone: it played over the editor's before/after, and without it the speaker no longer claims to be the editor.",
  "sfx": [
   [
    "whoosh-2",
@@ -46,13 +50,19 @@
    "send-swoosh",
    1.95,
    0.23,
-   -23
+   -21
   ],
   [
    "whoosh-2",
    3.4,
    0.85,
    -20
+  ],
+  [
+   "tick-1",
+   5.0,
+   0.0,
+   -26
   ],
   [
    "cc0-swell-short",
@@ -78,5 +88,13 @@
   1.45,
   3.4,
   6.02
+ ],
+ "raw_voice_until": 0.75,
+ "music_lift": [
+  [
+   1.4,
+   3.4,
+   8
+  ]
  ]
 }

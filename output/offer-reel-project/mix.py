@@ -19,6 +19,15 @@ for a,b in C['segments']:
     seg=src[int(round(a*SR)):int(round(b*SR))].copy(); f=int(0.01*SR); r=np.linspace(0,1,f)[:,None]
     seg[:f]*=r; seg[-f:]*=r[::-1]; parts.append(seg)
 voice=np.concatenate(parts); N=len(voice); T=N/SR
+ru=C.get('raw_voice_until')
+if ru:   # RAW opening: thin phone-mic sound with a little room echo and hiss, switching to the clean voice at the snap
+    n=int((ru+0.05)*SR); seg=voice[:n].copy(); F=np.fft.rfft(seg,axis=0); f=np.fft.rfftfreq(n,1/SR)
+    g=np.clip((f-250)/150,0,1)*np.clip((3800-f)/800,0,1); g=g*(1+0.6*np.exp(-((f-1500)/500)**2)); seg=np.fft.irfft(F*g[:,None],n,axis=0)
+    for d,a_ in [(0.031,0.35),(0.067,0.22),(0.113,0.12)]:
+        k=int(d*SR); seg[k:]+=seg[:-k]*a_
+    seg+=np.random.default_rng(3).normal(0,0.0016,seg.shape); seg*=0.75
+    x=np.ones((n,1)); cf=int(0.03*SR); x[n-cf-int(0.05*SR):n-int(0.05*SR)]=np.linspace(1,0,cf)[:,None]; x[n-int(0.05*SR):]=0
+    voice[:n]=seg*x+voice[:n]*(1-x)
 mus=load(MUS,0,T+0.1)[:N]; mus=np.pad(mus,((0,N-len(mus)),(0,0)))
 env=np.abs(voice).mean(1); k=int(0.15*SR); env=np.convolve(env,np.ones(k)/k,'same')
 duck=1-0.37*np.clip(env/0.02,0,1)                  # about -4 dB more under speech
@@ -26,6 +35,8 @@ k2=int(0.25*SR); duck=np.convolve(np.pad(duck,(k2,k2),'edge'),np.ones(k2)/k2,'sa
 fade=np.ones(N); fo=int(0.8*SR); fade[-fo:]=np.linspace(1,0,fo)**1.5; fi=int(0.25*SR); fade[:fi]=np.linspace(0,1,fi)
 tt=np.arange(N)/SR; bump=np.ones(N)
 for tc in C.get('music_swells',[]): bump+=0.55*np.exp(-((tt-tc)/0.28)**2)   # music lifts ~+4 dB around each transition
+for a0,a1,gdb in C.get('music_lift',[]):   # music carries the moments with no voice (the before/after)
+    w=np.clip((tt-a0)/0.25,0,1)*np.clip((a1-tt)/0.25,0,1); bump*=1+(10**(gdb/20)-1)*w
 mix=voice + mus*(10**(-22/20))*(duck*fade*bump)[:,None]
 SFXL=C.get('sfx',[])
 for name,peak_at,peak_off,gain in SFXL:
