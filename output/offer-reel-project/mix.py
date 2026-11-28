@@ -24,10 +24,14 @@ env=np.abs(voice).mean(1); k=int(0.15*SR); env=np.convolve(env,np.ones(k)/k,'sam
 duck=1-0.37*np.clip(env/0.02,0,1)                  # about -4 dB more under speech
 k2=int(0.25*SR); duck=np.convolve(np.pad(duck,(k2,k2),'edge'),np.ones(k2)/k2,'same')[k2:-k2]
 fade=np.ones(N); fo=int(0.8*SR); fade[-fo:]=np.linspace(1,0,fo)**1.5; fi=int(0.25*SR); fade[:fi]=np.linspace(0,1,fi)
-mix=voice + mus*(10**(-23/20))*(duck*fade)[:,None]
+tt=np.arange(N)/SR; bump=np.ones(N)
+for tc in C.get('music_swells',[]): bump+=0.55*np.exp(-((tt-tc)/0.28)**2)   # music lifts ~+4 dB around each transition
+mix=voice + mus*(10**(-22/20))*(duck*fade*bump)[:,None]
 SFXL=C.get('sfx',[])
 for name,peak_at,peak_off,gain in SFXL:
-    s=load(f'{SFX}/{name}.wav')*10**(gain/20); i=int((peak_at-peak_off)*SR); j=min(N,i+len(s)); mix[i:j]+=s[:j-i]
+    s=load(f'{SFX}/{name}.wav')*10**(gain/20); i=int((peak_at-peak_off)*SR)
+    if i<0: s=s[-i:]; i=0      # sound starts before the video: keep only its tail
+    j=min(N,i+len(s)); mix[i:j]+=s[:j-i]
 mix=np.tanh(mix*0.98)/0.98 if np.abs(mix).max()>0.98 else mix
 subprocess.run(['ffmpeg','-v','error','-y','-f','f32le','-ar',str(SR),'-ac','2','-i','-','-c:a','pcm_s16le',OUT],input=mix.astype(np.float32).tobytes(),check=True)
 print('ok',round(T,3))

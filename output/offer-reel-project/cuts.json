@@ -3,7 +3,7 @@
  "segments": [
   [
    0.58,
-   8.58
+   9.18
   ]
  ],
  "roomtone": [
@@ -22,21 +22,37 @@
   [
    5.42,
    5.56
+  ],
+  [
+   8.3,
+   9.18
   ]
  ],
- "note": "One continuous take with the natural pauses kept; breaths and a lip click inside the pauses are replaced with room tone.",
+ "note": "One continuous take with natural pauses kept; breaths, a lip click and the digital-silence tail are replaced with room tone.",
  "sfx": [
   [
    "whoosh-2",
-   1.62,
+   0.75,
    0.85,
-   -18
+   -20
   ],
   [
    "whoosh-2",
-   3.2,
+   1.45,
    0.85,
    -19
+  ],
+  [
+   "send-swoosh",
+   1.95,
+   0.23,
+   -23
+  ],
+  [
+   "whoosh-2",
+   3.4,
+   0.85,
+   -20
   ],
   [
    "cc0-swell-short",
@@ -48,7 +64,19 @@
    "send-swoosh",
    6.7,
    0.23,
+   -23
+  ],
+  [
+   "pop-2",
+   7.3,
+   0.01,
    -22
   ]
+ ],
+ "music_swells": [
+  0.75,
+  1.45,
+  3.4,
+  6.02
  ]
 }
