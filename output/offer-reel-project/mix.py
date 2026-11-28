@@ -39,8 +39,13 @@ for a0,a1,gdb in C.get('music_lift',[]):   # music carries the moments with no v
     w=np.clip((tt-a0)/0.25,0,1)*np.clip((a1-tt)/0.25,0,1); bump*=1+(10**(gdb/20)-1)*w
 mix=voice + mus*(10**(-22/20))*(duck*fade*bump)[:,None]
 SFXL=C.get('sfx',[])
-for name,peak_at,peak_off,gain in SFXL:
-    s=load(f'{SFX}/{name}.wav')*10**(gain/20); i=int((peak_at-peak_off)*SR)
+for e in SFXL:   # [file, peak time in video, peak offset inside the (trimmed) clip, gain dB, optional start in file, optional length]
+    name,peak_at,peak_off,gain=e[:4]; ss=e[4] if len(e)>4 else 0; du=e[5] if len(e)>5 else None
+    s=load(f'{SFX}/{name}' if '.' in name else f'{SFX}/{name}.wav',ss if ss else None,du)
+    s=s/max(np.abs(s).max(),1e-6)*10**(-1/20)            # peak-normalise every effect to -1 dBFS, then apply its gain
+    if du: f=min(len(s),int(0.08*SR)); s[-f:]*=np.linspace(1,0,f)[:,None]
+    f=min(len(s),int(0.004*SR)); s[:f]*=np.linspace(0,1,f)[:,None]
+    s=s*10**(gain/20); i=int((peak_at-peak_off)*SR)
     if i<0: s=s[-i:]; i=0      # sound starts before the video: keep only its tail
     j=min(N,i+len(s)); mix[i:j]+=s[:j-i]
 mix=np.tanh(mix*0.98)/0.98 if np.abs(mix).max()>0.98 else mix
