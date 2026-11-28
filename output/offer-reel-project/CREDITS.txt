@@ -1,0 +1,5 @@
+Music: "Brainiac" - Mixkit (Mixkit Free Music licence, commercial OK, no attribution required)
+SFX (Mixkit Free SFX licence / CC0, from the ghost-editor sound library): whoosh-cine, whoosh-3, cinematic-deep-boom,
+  tech-digital-whoosh, tech-glitch-2, cinematic-film-flash, tech-notification-2
+Fonts: Inter (SIL Open Font License)
+Card thumbnails: stills cut from the speaker's own footage.
